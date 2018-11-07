@@ -45,7 +45,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	
     
     // CAN CHANGE THE NUMBERS
-    long NUMBER_OF_SEARCH_STEP = 50000; // number of computed plan
+    long NUMBER_OF_SEARCH_STEP = 500000; // number of computed plan
     long number_iter = 0; 
     long number_iter_max = 10000; // number of iteration with a same plan before restart 
 	@Override
@@ -182,12 +182,12 @@ public class AuctionTemplate implements AuctionBehavior {
 	        
 	        long time_end = System.currentTimeMillis();
 	        long duration = time_end - time_start;
-	        System.out.println("The plan was generated in "+duration+" milliseconds. COST BEST_PLAN = "+bestcost +" COST Actual Plan = "+cost + "   Cost neighbour = "+ nextcost );
+	        //System.out.println("The plan was generated in "+duration+" milliseconds. COST BEST_PLAN = "+bestcost +" COST Actual Plan = "+cost + "   Cost neighbour = "+ nextcost );
 			
 		}
 		List<Plan> re;
-		System.out.println("Ultra PLANS: "+ ultraPlans.toString() );
-		System.out.println("Best PLANS: "+ bestPlans.toString() );
+		//System.out.println("Ultra PLANS: "+ ultraPlans.toString() );
+		//System.out.println("Best PLANS: "+ bestPlans.toString() );
 
 		//return the bestPLAN with the shortest distance
 		if(bestcost  > cost ) {re= ultraPlans;
@@ -195,7 +195,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		else {re= bestPlans;}
 		
 		System.out.println("FINAL PLAN COST: "+ bestcost );
-		System.out.println("FINAL PLANS: "+ re.toString() );
+		//System.out.println("FINAL PLANS: "+ re.toString() );
 		
         return bestPlans;
     }
@@ -344,7 +344,7 @@ public class AuctionTemplate implements AuctionBehavior {
     		if(vehicles.get(v).capacity() < weight) // overcapacity
     		{
     			validation = false;
-    			System.out.println("Vehicle: " + v +" is OVERLOADED");
+    			//System.out.println("Vehicle: " + v +" is OVERLOADED");
     		}
     		
     		}
@@ -483,7 +483,7 @@ private void restart(List<Vehicle> vehicles) {
 
 // not used ( restart from a random solution )
 private void shuffle(List<Vehicle> vehicles) {
-	System.out.println("RESHUFFLE");
+	//System.out.println("RESHUFFLE");
 	Random rand = new Random();
 	int n = 0; 
 	cost = 50000;
@@ -491,7 +491,7 @@ private void shuffle(List<Vehicle> vehicles) {
 	List<Act> act = nextTask.get(j);
 	while(n < listAct.size())  {
 		while(vehicles.get(j).capacity() < get_weight(vehicles, j, act) )  {
-			System.out.println("cap : " +vehicles.get(j).capacity() +"Weight : "+ get_weight(vehicles, j, act));
+			//System.out.println("cap : " +vehicles.get(j).capacity() +"Weight : "+ get_weight(vehicles, j, act));
 			j = rand.nextInt(vehicles.size());
 			act = nextTask.get(j);
 			
