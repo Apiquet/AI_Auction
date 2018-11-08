@@ -7,8 +7,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 
+import logist.LogistSettings;
 import logist.Measures;
 import logist.behavior.AuctionBehavior;
+import logist.config.Parsers;
 import logist.agent.Agent;
 import logist.simulation.Vehicle;
 import logist.plan.Plan;
@@ -32,6 +34,8 @@ public class AuctionTemplate implements AuctionBehavior {
 	private Random random;
 	private Vehicle vehicle;
 	private City currentCity;
+	private long timeout_setup;
+    private long timeout_plan;
 	List<Act> listAct = new ArrayList<Act>();
 
     double cost;
@@ -45,9 +49,9 @@ public class AuctionTemplate implements AuctionBehavior {
 	
     
     // CAN CHANGE THE NUMBERS
-    long NUMBER_OF_SEARCH_STEP = 500000; // number of computed plan
+    
     long number_iter = 0; 
-    long number_iter_max = 10000; // number of iteration with a same plan before restart 
+    long number_iter_max = 5000; // number of iteration with a same plan before restart 
 	@Override
 	public void setup(Topology topology, TaskDistribution distribution,
 			Agent agent) {
@@ -59,6 +63,19 @@ public class AuctionTemplate implements AuctionBehavior {
 		this.currentCity = vehicle.homeCity();
 		long seed = -9019554669489983951L * currentCity.hashCode() * agent.id();
 		this.random = new Random(seed);
+		
+		 LogistSettings ls = null;
+	        try {
+	            ls = Parsers.parseSettings("config\\settings_auction.xml");
+	        }
+	        catch (Exception exc) {
+	            System.out.println("There was a problem loading the configuration file.");
+	        }
+		
+		// the setup method cannot last more than timeout_setup milliseconds
+        timeout_setup = ls.get(LogistSettings.TimeoutKey.SETUP);
+        // the plan method cannot execute more than timeout_plan milliseconds
+        timeout_plan = ls.get(LogistSettings.TimeoutKey.PLAN);
 	}
 
 	@Override
@@ -87,31 +104,38 @@ public class AuctionTemplate implements AuctionBehavior {
 
 	@Override
 	public List<Plan> plan(List<Vehicle> vehicles, TaskSet tasks) {
-		System.out.println("starting plan" );
-		long time_start = System.currentTimeMillis();
+        long time_start = System.currentTimeMillis();
         
         //INITIALIZATION
-        cost = 200000;
-        bestcost = 200000;
+        cost = 9999999;
+        bestcost = 9999999;
         while (bestPlans.size() < vehicles.size()) {
         	bestPlans.add(Plan.EMPTY);
         }
         while (ultraPlans.size() < vehicles.size()) {
         	ultraPlans.add(Plan.EMPTY);
-        }       
+        }
+        
+        
+        
+        
+        
+        
        
         //Creat a List of task to work with indexes
         List<Task> taskList = new ArrayList<Task>();
         for (Task task : tasks) {
         	taskList.add(task)	;
-        }     
+        }
         
-        // generate all possible action that have to be performed ( 2 for each task, pick up and deliver )  
+        
+     // generate all possible action that have to be performed ( 2 for each task, pick up and deliver )  
         
         //boolean = False => pickup
         //boolean = False => deliver
         //ListAct = [pickup_task0, deliver_task0,pickup_task1,deliver_task1......]
         for(int i = 0 ; i < taskList.size() ; i++)
+        	
         {	Task task = taskList.get(i);
         	listAct.add(new Act(task, false));
         	listAct.add(new Act(task, true));
@@ -125,6 +149,8 @@ public class AuctionTemplate implements AuctionBehavior {
         	nextTask.put(j, act);
         }
         
+        
+        
         // INITIAL SOLUTION
         // We give to all vehicle the same amount of task
         //Vehicle 1 : pickup_task0, deliver_task0 , pickup_taskN+1 ,deliver_taskN+1
@@ -134,68 +160,108 @@ public class AuctionTemplate implements AuctionBehavior {
         //Vehicle N : pickup_taskN,deliver_taskN
         
         int n = 0; 
+        int j = 0;
     	while(n < listAct.size() ) {
-    		for(int j = 0 ; j < vehicles.size() ; j++) {
-    			List<Act> act = nextTask.get(j);
-    			act.add(listAct.get(n));
-        		act.add(listAct.get(n+1));
-        		nextTask.put(j, act);
+    	
+    		while(listAct.get(n).get_task().weight > vehicles.get(j).capacity()) 
+    		{
+    			
         		
-
-        		n =  n + 2;
-        		if(n == listAct.size() ) {break;}
+        		if(j >= vehicles.size() - 1 ) {j = 0;}
+        		else {j = j + 1;}
+        		
+        		
         		        		
     		}
+    		
+    		List<Act> act = nextTask.get(j);
+			act.add(listAct.get(n));
+    		act.add(listAct.get(n+1));
+    		nextTask.put(j, act);
+    		n =  n + 2;
+    		if(j >= vehicles.size() - 1 ) {j = 0;}
+    		else {j = j + 1;}
+    		if(n == listAct.size() ) {break;}
+    		
     	}
+    	
+    	
+    	
     	
         //INITIALIZATION of nextTask_clone
     	nextTask_clone = (Hashtable<Integer, List<Act>>) nextTask.clone();
+    	
+    	
+    	
+        	
+		
+		
 		List<Plan> plans = new ArrayList<Plan>();
-		for(int k = 0 ; k< NUMBER_OF_SEARCH_STEP ; k++) {
-				
-			plans.clear();	
+		long time_end = System.currentTimeMillis();
+        long duration = time_end - time_start;
+        
+		while(duration+100 < timeout_plan) {
 			
-			for(int i = 0 ; i< vehicles.size(); i++)
-	        {
-				Plan planVehicle= hashToPlan(vehicles.get(i), nextTask.get(i));
-				plans.add(planVehicle);
-				
-	        }		
-	        
-	        // Plans' cost for all vehicles
-	        while (plans.size() < vehicles.size()) {
-	            plans.add(Plan.EMPTY);
-	        }
-	        
-	        nextcost = 0;
-	        
-	        for(int i = 0 ; i< plans.size(); i++)
-	        {
-	        	nextcost = nextcost + plans.get(i).totalDistance();
-	        	
-	        }
-	        
-	        //OPIMIZATION = finding a better neigbour , if can't find after a number of iteration restart from initial solution
-	        nextTask = optimize( vehicles, taskList,plans);
-	        
-	        long time_end = System.currentTimeMillis();
-	        long duration = time_end - time_start;
-	        //System.out.println("The plan was generated in "+duration+" milliseconds. COST BEST_PLAN = "+bestcost +" COST Actual Plan = "+cost + "   Cost neighbour = "+ nextcost );
+		plans.clear();	
+		
+		for(int i = 0 ; i< vehicles.size(); i++)
+        {
+			Plan planVehicle= hashToPlan(vehicles.get(i), nextTask.get(i));
+			plans.add(planVehicle);
 			
+        }		
+        
+                
+		
+        // Plans' cost for all vehicles
+        while (plans.size() < vehicles.size()) {
+            plans.add(Plan.EMPTY);
+        }
+        
+        nextcost = 0;
+        
+        for(int i = 0 ; i< plans.size(); i++)
+        {
+        	nextcost = nextcost + plans.get(i).totalDistance();
+        	
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        //OPIMIZATION = finding a better neigbour , if can't find after a number of iteration restart from initial solution
+        nextTask = optimize( vehicles, taskList,plans);
+        
+		
+		
+        
+		
+        time_end = System.currentTimeMillis();
+        duration = time_end - time_start;
+        System.out.println("The plan was generated in "+duration+" milliseconds. COST BEST_PLAN = "+bestcost +" COST Actual Plan = "+cost + "   Cost neighbour = "+ nextcost );
+		
+        
+        
 		}
 		List<Plan> re;
-		//System.out.println("Ultra PLANS: "+ ultraPlans.toString() );
-		//System.out.println("Best PLANS: "+ bestPlans.toString() );
-
 		//return the bestPLAN with the shortest distance
-		if(bestcost  > cost ) {re= ultraPlans;
+		if(bestcost  > cost ) {re= bestPlans;
 		bestcost = cost;}
-		else {re= bestPlans;}
+		else {re= ultraPlans;}
 		
 		System.out.println("FINAL PLAN COST: "+ bestcost );
-		//System.out.println("FINAL PLANS: "+ re.toString() );
-		
         return re;
+		
+        
+        
+        
+        
+        
     }
 
     //For a vehicle's solution in the hashtable, return a plan
@@ -304,6 +370,7 @@ public class AuctionTemplate implements AuctionBehavior {
     {
     	
     	boolean validation = true; // retrun false if one the constraint is not respected
+    	
     	for(int v =0; v < vehicles.size() ; v++) // for all vehicle
     	{
     		List<Act> actions = nextTask_clone.get(v);
@@ -342,7 +409,7 @@ public class AuctionTemplate implements AuctionBehavior {
     		if(vehicles.get(v).capacity() < weight) // overcapacity
     		{
     			validation = false;
-    			//System.out.println("Vehicle: " + v +" is OVERLOADED");
+    			System.out.println("Vehicle: " + v +" is OVERLOADED");
     		}
     		
     		}
@@ -414,7 +481,7 @@ public class AuctionTemplate implements AuctionBehavior {
     			
     			int v1 = rand.nextInt(vehicles.size());
     			int v2 = rand.nextInt(vehicles.size());
-    			while(v1 == v2 || nextTask_clone.get(v1).size() == 2 ) {v1 = rand.nextInt(vehicles.size());
+    			while(v1 == v2 || nextTask_clone.get(v1).size() <= 2  ) {v1 = rand.nextInt(vehicles.size() );
     							v2 = rand.nextInt(vehicles.size());}// assure vehicle different
     			
     			int t = rand.nextInt(nextTask_clone.get(v1).size()); // pick random action in choosen vehicle
@@ -452,36 +519,48 @@ public class AuctionTemplate implements AuctionBehavior {
     
     // restart to the initial solution 
 private void restart(List<Vehicle> vehicles) {
-	int n = 0; 
-	cost = 200000;
+	int n = 0;
+	int k = 0;
+	cost = 9999999;
 	nextTask.clear();
 	for(int j = 0; j < vehicles.size() ; j++) {
     	List<Act> act = new ArrayList<Act>();
        
     	nextTask.put(j, act);
     }
+	 
+    
 	while(n < listAct.size() ) {
-		for(int j = 0 ; j < vehicles.size() ; j++) {
-			List<Act> act = nextTask.get(j);
-			act.add(listAct.get(n));
-    		act.add(listAct.get(n+1));
-    		nextTask.put(j, act);
+	
+		while(listAct.get(n).get_task().weight > vehicles.get(k).capacity()) 
+		{
+			
     		
-
-    		n =  n + 2;
-    		if(n == listAct.size() ) {break;}
+    		if(k >= vehicles.size() - 1 ) {k = 0;}
+    		else {k = k + 1;}
+    		
+    		
     		        		
 		}
 		
-		
+		List<Act> act = nextTask.get(k);
+		act.add(listAct.get(n));
+		act.add(listAct.get(n+1));
+		nextTask.put(k, act);
+		n =  n + 2;
+		if(k >= vehicles.size() - 1 ) {k = 0;}
+		else {k = k + 1;}
+		if(n == listAct.size() ) {break;}
 		
 	}
+	
+	
 	nextTask_clone = (Hashtable<Integer, List<Act>>) nextTask.clone();
 }    
 
 // not used ( restart from a random solution )
 private void shuffle(List<Vehicle> vehicles) {
-	//System.out.println("RESHUFFLE");
+	System.out.println("RESHUFFLE");
 	Random rand = new Random();
 	int n = 0; 
 	cost = 50000;
@@ -489,7 +568,7 @@ private void shuffle(List<Vehicle> vehicles) {
 	List<Act> act = nextTask.get(j);
 	while(n < listAct.size())  {
 		while(vehicles.get(j).capacity() < get_weight(vehicles, j, act) )  {
-			//System.out.println("cap : " +vehicles.get(j).capacity() +"Weight : "+ get_weight(vehicles, j, act));
+			System.out.println("cap : " +vehicles.get(j).capacity() +"Weight : "+ get_weight(vehicles, j, act));
 			j = rand.nextInt(vehicles.size());
 			act = nextTask.get(j);
 			
@@ -530,29 +609,6 @@ private int get_weight(List<Vehicle>vehicles, int v, List<Act> actions) {
 	}
 return weight;
 }
-
-	private Plan naivePlan(Vehicle vehicle, TaskSet tasks) {
-		City current = vehicle.getCurrentCity();
-		Plan plan = new Plan(current);
-
-		for (Task task : tasks) {
-			// move: current city => pickup location
-			for (City city : current.pathTo(task.pickupCity))
-				plan.appendMove(city);
-
-			plan.appendPickup(task);
-
-			// move: pickup location => delivery location
-			for (City city : task.path())
-				plan.appendMove(city);
-
-			plan.appendDelivery(task);
-
-			// set current city
-			current = task.deliveryCity;
-		}
-		return plan;
-	}
 }
 
 //class of action
