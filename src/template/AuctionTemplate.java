@@ -57,7 +57,6 @@ public class AuctionTemplate implements AuctionBehavior {
 		this.agent = agent;
 		this.vehicle = agent.vehicles().get(0);
 		this.currentCity = vehicle.homeCity();
-
 		long seed = -9019554669489983951L * currentCity.hashCode() * agent.id();
 		this.random = new Random(seed);
 	}
@@ -83,13 +82,12 @@ public class AuctionTemplate implements AuctionBehavior {
 
 		double ratio = 1.0 + (random.nextDouble() * 0.05 * task.id);
 		double bid = ratio * marginalCost;
-
 		return (long) Math.round(bid);
 	}
 
 	@Override
 	public List<Plan> plan(List<Vehicle> vehicles, TaskSet tasks) {
-		
+		System.out.println("starting plan" );
 		long time_start = System.currentTimeMillis();
         
         //INITIALIZATION
@@ -197,7 +195,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		System.out.println("FINAL PLAN COST: "+ bestcost );
 		//System.out.println("FINAL PLANS: "+ re.toString() );
 		
-        return bestPlans;
+        return re;
     }
 
     //For a vehicle's solution in the hashtable, return a plan
