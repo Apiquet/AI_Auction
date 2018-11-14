@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<history configuration="config\auction.xml">
+<history configuration="config\auction2.xml">
 	<agents>
 		<agent name="auction-random">
 			<vehicle name="Vehicle 1"/>
@@ -10,105 +10,72 @@
 	<rounds>
 		<round id="1">
 			<tasks>
-				<task id="0" pickup="Cardiff" delivery="Sheffield" weight="3" reward="69479">
-					<bid agent="auction-random" bid="2751"/>
+				<task id="0" pickup="Breda" delivery="Almere" weight="27" reward="62791">
+					<bid agent="auction-random" bid="1180"/>
 				</task>
-				<task id="1" pickup="Manchester" delivery="Norwich" weight="3" reward="47516">
-					<bid agent="auction-random" bid="2411"/>
+				<task id="1" pickup="Den Haag" delivery="Groningen" weight="19" reward="8119">
+					<bid agent="auction-random" bid="1762"/>
 				</task>
-				<task id="2" pickup="Cardiff" delivery="Manchester" weight="3" reward="68638">
-					<bid agent="auction-random" bid="2967"/>
+				<task id="2" pickup="Apeldoorn" delivery="Den Haag" weight="26" reward="47362">
+					<bid agent="auction-random" bid="1573"/>
 				</task>
-				<task id="3" pickup="Sheffield" delivery="Portsmouth" weight="3" reward="55553">
-					<bid agent="auction-random" bid="2336"/>
+				<task id="3" pickup="Utrecht" delivery="Groningen" weight="12" reward="30020">
+					<bid agent="auction-random" bid="1543"/>
 				</task>
-				<task id="4" pickup="Liverpool" delivery="Norwich" weight="3" reward="41305">
-					<bid agent="auction-random" bid="3834"/>
+				<task id="4" pickup="Utrecht" delivery="Amsterdam" weight="24" reward="91775">
+					<bid agent="auction-random" bid="1360"/>
 				</task>
-				<task id="5" pickup="Norwich" delivery="London" weight="3" reward="85625">
-					<bid agent="auction-random" bid="623"/>
+				<task id="5" pickup="Nijmegen" delivery="Groningen" weight="26" reward="29695">
+					<bid agent="auction-random" bid="1788"/>
 				</task>
-				<task id="6" pickup="Cardiff" delivery="London" weight="3" reward="64503">
-					<bid agent="auction-random" bid="2599"/>
+				<task id="6" pickup="Almere" delivery="Utrecht" weight="26" reward="92712">
+					<bid agent="auction-random" bid="1100"/>
 				</task>
-				<task id="7" pickup="London" delivery="Manchester" weight="3" reward="68101">
-					<bid agent="auction-random" bid="1431"/>
+				<task id="7" pickup="Den Haag" delivery="Nijmegen" weight="28" reward="54405">
+					<bid agent="auction-random" bid="1513"/>
 				</task>
-				<task id="8" pickup="Plymouth" delivery="Birmingham" weight="3" reward="41269">
-					<bid agent="auction-random" bid="5545"/>
+				<task id="8" pickup="Apeldoorn" delivery="Almere" weight="21" reward="77731">
+					<bid agent="auction-random" bid="927"/>
 				</task>
-				<task id="9" pickup="Portsmouth" delivery="Plymouth" weight="3" reward="75780">
-					<bid agent="auction-random" bid="2582"/>
+				<task id="9" pickup="Apeldoorn" delivery="Den Haag" weight="26" reward="47362">
+					<bid agent="auction-random" bid="1671"/>
 				</task>
-				<task id="10" pickup="Birmingham" delivery="Cardiff" weight="3" reward="85625">
-					<bid agent="auction-random" bid="2717"/>
+				<task id="10" pickup="Almere" delivery="Eindhoven" weight="12" reward="55300">
+					<bid agent="auction-random" bid="1321"/>
 				</task>
-				<task id="11" pickup="Portsmouth" delivery="Sheffield" weight="3" reward="55553">
-					<bid agent="auction-random" bid="3163"/>
+				<task id="11" pickup="Breda" delivery="Nijmegen" weight="11" reward="71177">
+					<bid agent="auction-random" bid="848"/>
 				</task>
-				<task id="12" pickup="Cardiff" delivery="Manchester" weight="3" reward="68638">
-					<bid agent="auction-random" bid="2258"/>
+				<task id="12" pickup="Rotterdam" delivery="Almere" weight="22" reward="67350">
+					<bid agent="auction-random" bid="1184"/>
 				</task>
-				<task id="13" pickup="Newcastle" delivery="Manchester" weight="3" reward="69390">
-					<bid agent="auction-random" bid="2088"/>
+				<task id="13" pickup="Den Haag" delivery="Apeldoorn" weight="17" reward="47362">
+					<bid agent="auction-random" bid="1278"/>
 				</task>
-				<task id="14" pickup="Portsmouth" delivery="Liverpool" weight="3" reward="48501">
-					<bid agent="auction-random" bid="4218"/>
-				</task>
-				<task id="15" pickup="Sheffield" delivery="Liverpool" weight="3" reward="85840">
-					<bid agent="auction-random" bid="1961"/>
-				</task>
-				<task id="16" pickup="London" delivery="Birmingham" weight="3" reward="85088">
-					<bid agent="auction-random" bid="1981"/>
-				</task>
-				<task id="17" pickup="Portsmouth" delivery="Norwich" weight="3" reward="72236">
-					<bid agent="auction-random" bid="2930"/>
-				</task>
-				<task id="18" pickup="Plymouth" delivery="Norwich" weight="3" reward="41806">
-					<bid agent="auction-random" bid="4928"/>
-				</task>
-				<task id="19" pickup="Cardiff" delivery="Leeds" weight="3" reward="62087">
-					<bid agent="auction-random" bid="5165"/>
+				<task id="14" pickup="Eindhoven" delivery="Nijmegen" weight="28" reward="81761">
+					<bid agent="auction-random" bid="1365"/>
 				</task>
 			</tasks>
 			<events>
-				<event id="0" time="0" vehicle="Vehicle 1" move="Leeds"/>
-				<event id="1" time="0" vehicle="Vehicle 2" pickup="16"/>
-				<event id="2" time="299999988" vehicle="Vehicle 2" move="Portsmouth"/>
-				<event id="3" time="1094444378" vehicle="Vehicle 1" move="Sheffield"/>
-				<event id="4" time="1131111041" vehicle="Vehicle 2" pickup="11"/>
-				<event id="5" time="1431111019" vehicle="Vehicle 2" move="London"/>
-				<event id="6" time="1553333235" vehicle="Vehicle 1" move="Birmingham"/>
-				<event id="7" time="2262222077" vehicle="Vehicle 2" move="Birmingham"/>
-				<event id="8" time="2555555393" vehicle="Vehicle 1" move="Cardiff"/>
-				<event id="9" time="3573333097" vehicle="Vehicle 2" deliver="16"/>
-				<event id="10" time="3833333081" vehicle="Vehicle 1" pickup="2"/>
-				<event id="11" time="3873333075" vehicle="Vehicle 2" move="Sheffield"/>
-				<event id="12" time="4133333059" vehicle="Vehicle 1" move="Birmingham"/>
-				<event id="13" time="4875555231" vehicle="Vehicle 2" deliver="11"/>
-				<event id="14" time="5175555214" vehicle="Vehicle 2" move="Birmingham"/>
-				<event id="15" time="5411110760" vehicle="Vehicle 1" move="London"/>
-				<event id="16" time="6177777371" vehicle="Vehicle 2" move="London"/>
-				<event id="17" time="6722221780" vehicle="Vehicle 1" move="Portsmouth"/>
-				<event id="18" time="7488888388" vehicle="Vehicle 2" move="Norwich"/>
-				<event id="19" time="7553332832" vehicle="Vehicle 1" pickup="9"/>
-				<event id="20" time="7853332809" vehicle="Vehicle 1" pickup="14"/>
-				<event id="21" time="8153332788" vehicle="Vehicle 1" move="Plymouth"/>
-				<event id="22" time="8766666074" vehicle="Vehicle 2" pickup="5"/>
-				<event id="23" time="9066666053" vehicle="Vehicle 2" move="London"/>
-				<event id="24" time="10042221543" vehicle="Vehicle 1" pickup="18"/>
-				<event id="25" time="10342221521" vehicle="Vehicle 1" deliver="9"/>
-				<event id="26" time="10344443740" vehicle="Vehicle 2" move="Birmingham"/>
+				<event id="0" time="0" vehicle="Vehicle 1" move="Den Haag"/>
+				<event id="1" time="0" vehicle="Vehicle 2" move="Nijmegen"/>
+				<event id="2" time="779999961" vehicle="Vehicle 2" move="Apeldoorn"/>
+				<event id="3" time="1086666626" vehicle="Vehicle 1" move="Rotterdam"/>
+				<event id="4" time="1414444369" vehicle="Vehicle 2" pickup="9"/>
+				<event id="5" time="1509999944" vehicle="Vehicle 1" pickup="12"/>
+				<event id="6" time="1714444350" vehicle="Vehicle 2" pickup="2"/>
+				<event id="7" time="1809999933" vehicle="Vehicle 1" move="Utrecht"/>
+				<event id="8" time="2014444333" vehicle="Vehicle 2" move="Utrecht"/>
 			</events>
 		</round>
 	</rounds>
 	<statistics>
 		<stat rank="1" agent="auction-random">
-			<total-tasks value="20"/>
-			<total-distance value="1736.8"/>
-			<total-cost value="8684"/>
-			<total-reward value="7726"/>
-			<total-profit value="-958"/>
+			<total-tasks value="15"/>
+			<total-distance value="347.2"/>
+			<total-cost value="1736"/>
+			<total-reward value="0"/>
+			<total-profit value="-1736"/>
 		</stat>
 	</statistics>
 </history>

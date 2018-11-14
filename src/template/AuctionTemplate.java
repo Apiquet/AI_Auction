@@ -243,7 +243,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		
         time_end = System.currentTimeMillis();
         duration = time_end - time_start;
-        System.out.println("The plan was generated in "+duration+" milliseconds. COST BEST_PLAN = "+bestcost +" COST Actual Plan = "+cost + "   Cost neighbour = "+ nextcost );
+        //System.out.println("The plan was generated in "+duration+" milliseconds. COST BEST_PLAN = "+bestcost +" COST Actual Plan = "+cost + "   Cost neighbour = "+ nextcost );
 		
         
         
@@ -374,7 +374,7 @@ public class AuctionTemplate implements AuctionBehavior {
     	for(int v =0; v < vehicles.size() ; v++) // for all vehicle
     	{
     		List<Act> actions = nextTask_clone.get(v);
-    		int weight = 0;
+    		
     		for(int i = 0; i< actions.size() ; i++ ) { // for all possible actions
     			Act action1 = actions.get(i);
     			
@@ -404,18 +404,30 @@ public class AuctionTemplate implements AuctionBehavior {
     			
     			
     		// make sure the vehicle is not overloaded during the sequence of action	
-    		if(action1.get_deliver()) {weight = weight - action1.get_task().weight;} // deliver, substract weight
-    		else {weight = weight + action1.get_task().weight;} // pick up , add weight
-    		if(vehicles.get(v).capacity() < weight) // overcapacity
-    		{
-    			validation = false;
-    			System.out.println("Vehicle: " + v +" is OVERLOADED");
-    		}
+    		
     		
     		}
     		
     		
     	}
+    	
+    	
+    	
+    	for(int v =0; v < vehicles.size() ; v++) // for all vehicle
+    	{
+    		List<Act> actions = nextTask_clone.get(v);
+    		int weight = 0;
+    		for(int i = 0; i< actions.size() ; i++ ) { // for all possible actions
+    			Act action1 = actions.get(i);
+    			if(action1.get_deliver()) {weight = weight - action1.get_task().weight;} // deliver, substract weight
+        		else {weight = weight + action1.get_task().weight;} // pick up , add weight
+        		if(vehicles.get(v).capacity() < weight) // overcapacity
+        		{
+        			validation = false;
+        			//System.out.println("Vehicle: " + v +" is OVERLOADED");
+        		}
+    		}
+    		}
     	
     		
     		
@@ -477,6 +489,7 @@ public class AuctionTemplate implements AuctionBehavior {
         Random rand = new Random();
       //here do transformation Next_clone = transf(next)
     	do {
+    		
     		if(rand.nextBoolean()) { //give action
     			
     			int v1 = rand.nextInt(vehicles.size());
