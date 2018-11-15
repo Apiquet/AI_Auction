@@ -38,7 +38,8 @@ public class AuctionTemplate implements AuctionBehavior {
     private long timeout_plan;
 	List<Act> listAct = new ArrayList<Act>();
 	ArrayList<Result> result_list = new ArrayList<Result>();
-    double cost;
+    
+	double cost;
     double nextcost;
     double bestcost;
     List<Plan> bestPlans = new ArrayList<Plan>(); // bestplan for this path
@@ -52,6 +53,17 @@ public class AuctionTemplate implements AuctionBehavior {
     
     long number_iter = 0; 
     long number_iter_max = 5000; // number of iteration with a same plan before restart 
+    //FastPlan
+    List<Result> result_list_agent = new ArrayList<Result>();
+    List<Result> result_list_enemy = new ArrayList<Result>();
+    
+    List<Task> task_list_agent = new ArrayList<Task>();
+    List<Task> task_list_enemy = new ArrayList<Task>();
+    
+    List<Vehicle> vehicles_list; 
+    //Auction
+    long cost_agent_previous,cost_enemy_previous;
+    
 	@Override
 	public void setup(Topology topology, TaskDistribution distribution,
 			Agent agent) {
@@ -59,6 +71,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		this.topology = topology;
 		this.distribution = distribution;
 		this.agent = agent;
+		vehicles_list = agent.vehicles();
 		this.vehicle = agent.vehicles().get(0);
 		this.currentCity = vehicle.homeCity();
 		long seed = -9019554669489983951L * currentCity.hashCode() * agent.id();
@@ -81,18 +94,31 @@ public class AuctionTemplate implements AuctionBehavior {
 	@Override
 	public void auctionResult(Task previous, int winner, Long[] bids) {
 		Result result = new Result(previous,winner,bids);
-		result_list.add(result);
+		
+		
 		if (winner == agent.id()) {
+			result_list_agent.add(result);
+			task_list_enemy.remove(task_list_enemy.size()-1);
 			currentCity = previous.deliveryCity;
 		}
+		else {result_list_enemy.add(result);
+		task_list_agent.remove(task_list_agent.size()-1);}
+		System.out.println(task_list_agent.size()+"   "+task_list_enemy.size() );
 	}
 	
 	@Override
 	public Long askPrice(Task task) {
-
+		task_list_agent.add(task);
+		task_list_enemy.add(task);
+		long cost_agent,cost_enemy;
+		cost_agent = fast_plan(vehicles_list, task_list_agent);
+		cost_enemy = fast_plan(vehicles_list, task_list_enemy);
+		System.out.println(cost_agent +"    " + cost_enemy );
+	
+		
 		if (vehicle.capacity() < task.weight)
 			return null;
-
+		
 		long distanceTask = task.pickupCity.distanceUnitsTo(task.deliveryCity);
 		long distanceSum = distanceTask
 				+ currentCity.distanceUnitsTo(task.pickupCity);
@@ -104,6 +130,141 @@ public class AuctionTemplate implements AuctionBehavior {
 		return (long) Math.round(bid);
 	}
 
+	
+	public long fast_plan(List<Vehicle> vehicles_list,  List<Task> task_list) {
+		
+
+        //INITIALIZATION
+        cost = 9999999;
+        
+        while (bestPlans.size() < vehicles_list.size()) {
+        	bestPlans.add(Plan.EMPTY);
+        }
+        
+        
+        
+       
+        //Creat a List of task to work with indexes
+        List<Task> taskList = task_list;
+        
+        
+        listAct.clear();
+        
+     // generate all possible action that have to be performed ( 2 for each task, pick up and deliver )  
+        
+        //boolean = False => pickup
+        //boolean = False => deliver
+        //ListAct = [pickup_task0, deliver_task0,pickup_task1,deliver_task1......]
+        for(int i = 0 ; i < taskList.size() ; i++)
+        	
+        {	Task task = taskList.get(i);
+        	listAct.add(new Act(task, false));
+        	listAct.add(new Act(task, true));
+        }
+        
+        //initilize HASHTABLE
+        // hashtable with list of task corresponding to vehicle id
+        for(int j = 0; j < vehicles_list.size() ; j++) {
+        	List<Act> act = new ArrayList<Act>();
+           
+        	nextTask.put(j, act);
+        }
+        
+        
+        
+        // INITIAL SOLUTION
+        // We give to all vehicle the same amount of task
+        //Vehicle 1 : pickup_task0, deliver_task0 , pickup_taskN+1 ,deliver_taskN+1
+        //Vehicle 2 : pickup_task1,deliver_task1 , ... , ...
+        //Vehicle 3 : pickup_task2,deliver_task2
+        //...
+        //Vehicle N : pickup_taskN,deliver_taskN
+        
+        int n = 0; 
+        int j = 0;
+    	while(n < listAct.size() ) {
+    	
+    		while(listAct.get(n).get_task().weight > vehicles_list.get(j).capacity()) 
+    		{
+    			
+        		
+        		if(j >= vehicles_list.size() - 1 ) {j = 0;}
+        		else {j = j + 1;}
+        		
+        		
+        		        		
+    		}
+    		
+    		List<Act> act = nextTask.get(j);
+			act.add(listAct.get(n));
+    		act.add(listAct.get(n+1));
+    		nextTask.put(j, act);
+    		n =  n + 2;
+    		if(j >= vehicles_list.size() - 1 ) {j = 0;}
+    		else {j = j + 1;}
+    		if(n == listAct.size() ) {break;}
+    		
+    	}
+    	
+    	
+    	
+    	
+        //INITIALIZATION of nextTask_clone
+    	nextTask_clone = (Hashtable<Integer, List<Act>>) nextTask.clone();
+    	
+    	
+    	
+        	
+		
+		
+		List<Plan> plans = new ArrayList<Plan>();
+		
+        
+		for(int m =0; m < 5000; m++) {
+			
+		plans.clear();	
+		
+		for(int i = 0 ; i< vehicles_list.size(); i++)
+        {
+			Plan planVehicle= hashToPlan(vehicles_list.get(i), nextTask.get(i));
+			plans.add(planVehicle);
+			
+        }		
+        
+                
+		
+        // Plans' cost for all vehicles
+        while (plans.size() < vehicles_list.size()) {
+            plans.add(Plan.EMPTY);
+        }
+        
+        nextcost = 0;
+        
+        for(int i = 0 ; i< plans.size(); i++)
+        {
+        	nextcost = nextcost + plans.get(i).totalDistance()*vehicles_list.get(i).costPerKm();
+        	
+        }
+        
+        
+
+        
+        //OPIMIZATION = finding a better neigbour , if can't find after a number of iteration restart from initial solution
+        nextTask = optimize( vehicles_list, taskList,plans,true);
+        
+		}
+
+		long re = (long) cost;
+		return re  ;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public List<Plan> plan(List<Vehicle> vehicles, TaskSet tasks) {
         long time_start = System.currentTimeMillis();
@@ -120,7 +281,7 @@ public class AuctionTemplate implements AuctionBehavior {
         
         
         
-        
+        listAct.clear();
         
         
        
@@ -224,7 +385,7 @@ public class AuctionTemplate implements AuctionBehavior {
         
         for(int i = 0 ; i< plans.size(); i++)
         {
-        	nextcost = nextcost + plans.get(i).totalDistance();
+        	nextcost = nextcost + plans.get(i).totalDistance()*vehicles.get(i).costPerKm();
         	
         }
         
@@ -237,7 +398,7 @@ public class AuctionTemplate implements AuctionBehavior {
         
         
         //OPIMIZATION = finding a better neigbour , if can't find after a number of iteration restart from initial solution
-        nextTask = optimize( vehicles, taskList,plans);
+        nextTask = optimize( vehicles, taskList,plans,false);
         
 		
 		
@@ -444,7 +605,7 @@ public class AuctionTemplate implements AuctionBehavior {
     
     
     
-    private Hashtable<Integer, List<Act>>  optimize(List<Vehicle> vehicles, List<Task> taskList , List<Plan> plans ){
+    private Hashtable<Integer, List<Act>>  optimize(List<Vehicle> vehicles, List<Task> taskList , List<Plan> plans, boolean fast ){
     	
 		//Do a random transformation
 		//If it is a solution , 
@@ -453,7 +614,27 @@ public class AuctionTemplate implements AuctionBehavior {
     	//if cost is lower keep the plan.
     	
     	
-    	
+    	if(fast) {
+    		if (nextcost < cost ) {
+            	
+            	// if cost is better then we update the nextTask
+    	    	
+    	    	nextTask = (Hashtable<Integer, List<Act>>) nextTask_clone.clone(); // make nextTask the new checkpoint 
+    	    	cost = nextcost;
+    	    	Collections.copy(bestPlans, plans);
+    	    	
+            }
+            else { 
+            	
+            	
+            	nextTask_clone = (Hashtable<Integer, List<Act>>) nextTask.clone(); // load the last checkpoint
+            	
+	
+            }
+    		
+    		
+    	}
+    	else {
     	// found better plan
         if (nextcost < cost ) {
         	
@@ -481,14 +662,15 @@ public class AuctionTemplate implements AuctionBehavior {
         	}
         	//restart from a new initial solution
         	//shuffle(vehicles); //Don't work
-        	restart(vehicles); //useless
+        	restart(vehicles); 
         	
         	number_iter = 0;
         	
         }
+    	}
         
-        
-        
+       
+    	
         // pick a random transformation
         Random rand = new Random();
       //here do transformation Next_clone = transf(next)
@@ -498,8 +680,9 @@ public class AuctionTemplate implements AuctionBehavior {
     			
     			int v1 = rand.nextInt(vehicles.size());
     			int v2 = rand.nextInt(vehicles.size());
-    			while(v1 == v2 || nextTask_clone.get(v1).size() <= 2  ) {v1 = rand.nextInt(vehicles.size() );
-    							v2 = rand.nextInt(vehicles.size());}// assure vehicle different
+    			while(v1 == v2 || nextTask_clone.get(v1).size() < 2  ) {
+    				v1 = rand.nextInt(vehicles.size() );
+    				v2 = rand.nextInt(vehicles.size());}// assure vehicle different
     			
     			int t = rand.nextInt(nextTask_clone.get(v1).size()); // pick random action in choosen vehicle
     			Task task = nextTask_clone.get(v1).get(t).get_task(); // get task
@@ -510,14 +693,17 @@ public class AuctionTemplate implements AuctionBehavior {
 				int v1 = rand.nextInt(vehicles.size());
 				int a1 = 0;
 				int a2 = 0;
-				
+				if(nextTask_clone.get(v1).size() > 2 ) {
+					
+					
     			while(a1 == a2) {   a1 = rand.nextInt(nextTask_clone.get(v1).size());
-								    a2 = rand.nextInt(nextTask_clone.get(v1).size());}  // assure action in the v is diff
+								    a2 = rand.nextInt(nextTask_clone.get(v1).size());
+								    }  // assure action in the v is diff
     			
     			Act action1 = nextTask_clone.get(v1).get(a1);
     			Act action2 = nextTask_clone.get(v1).get(a2);
     			swap(action1,action2,v1);
-    			
+				}
     			
     			
     		}
@@ -526,7 +712,7 @@ public class AuctionTemplate implements AuctionBehavior {
     		//System.out.println("NOPE !");
     		}
     	while(constraint(vehicles,nextTask_clone) == false);
-    		
+    		 
     	
 	//System.out.println("Solution !");    
         		
