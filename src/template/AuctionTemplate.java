@@ -37,7 +37,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	private long timeout_setup;
     private long timeout_plan;
 	List<Act> listAct = new ArrayList<Act>();
-
+	ArrayList<Result> result_list = new ArrayList<Result>();
     double cost;
     double nextcost;
     double bestcost;
@@ -80,6 +80,8 @@ public class AuctionTemplate implements AuctionBehavior {
 
 	@Override
 	public void auctionResult(Task previous, int winner, Long[] bids) {
+		Result result = new Result(previous,winner,bids);
+		result_list.add(result);
 		if (winner == agent.id()) {
 			currentCity = previous.deliveryCity;
 		}
@@ -255,6 +257,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		else {re= ultraPlans;}
 		
 		System.out.println("FINAL PLAN COST: "+ bestcost );
+		System.out.println(result_list.toString());
+		
         return re;
 		
         
@@ -643,8 +647,31 @@ class Act{
 	public Task get_task() {
 		return this.task;
 	}
+	 
+}
+//result class
+class Result{
+	private Task task;
+	private int winner;
+	private Long[] bids;
 	
-	
-	
+	public Result(Task task, int winner, Long[] bids) 
+	{		
+		this.winner = winner;
+		this.bids = bids;
+		this.task = task;		
+	}
+	public String toString() {
+		return "Tasks: " + this.get_task() + ", winner= " + this.get_winner() + ", bids= " + String.format("%d", this.get_bids());
+	}
+	public int get_winner() {
+		return this.winner;
+	}
+	public Task get_task() {
+		return this.task;
+	}
+	public Long[] get_bids() {
+		return this.bids;
+	}	
 	 
 }
