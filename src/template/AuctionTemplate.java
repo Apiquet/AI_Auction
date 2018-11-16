@@ -54,14 +54,16 @@ public class AuctionTemplate implements AuctionBehavior {
     long number_iter = 0; 
     long number_iter_max = 5000; // number of iteration with a same plan before restart 
     //FastPlan
-    List<Result> result_list_agent = new ArrayList<Result>();
-    List<Result> result_list_enemy = new ArrayList<Result>();
+    int numb_plan_computed = 5000;
+    
     
     List<Task> task_list_agent = new ArrayList<Task>();
     List<Task> task_list_enemy = new ArrayList<Task>();
     
     List<Vehicle> vehicles_list; 
     //Auction
+    List<Result> result_list_agent = new ArrayList<Result>();
+    List<Result> result_list_enemy = new ArrayList<Result>();
     long cost_agent_previous,cost_enemy_previous;
     
 	@Override
@@ -103,31 +105,31 @@ public class AuctionTemplate implements AuctionBehavior {
 		}
 		else {result_list_enemy.add(result);
 		task_list_agent.remove(task_list_agent.size()-1);}
-		System.out.println(task_list_agent.size()+"   "+task_list_enemy.size() );
+		
 	}
 	
 	@Override
 	public Long askPrice(Task task) {
+		if(task_list_agent.size() >= 1) {cost_agent_previous = fast_plan(vehicles_list, task_list_agent);} //previous plan
+		
 		task_list_agent.add(task);
 		task_list_enemy.add(task);
 		long cost_agent,cost_enemy;
 		cost_agent = fast_plan(vehicles_list, task_list_agent);
 		cost_enemy = fast_plan(vehicles_list, task_list_enemy);
-		System.out.println(cost_agent +"    " + cost_enemy );
+		double bid;
+		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
+		if(diff <= 0) { bid = 1 ;}
+		else { bid  = diff + 1  ;}
+		
 	
 		
-		if (vehicle.capacity() < task.weight)
-			return null;
 		
-		long distanceTask = task.pickupCity.distanceUnitsTo(task.deliveryCity);
-		long distanceSum = distanceTask
-				+ currentCity.distanceUnitsTo(task.pickupCity);
-		double marginalCost = Measures.unitsToKM(distanceSum
-				* vehicle.costPerKm());
-
-		double ratio = 1.0 + (random.nextDouble() * 0.05 * task.id);
-		double bid = ratio * marginalCost;
-		return (long) Math.round(bid);
+		
+		System.out.println("New cost agent : "+cost_agent +" | diff agent: " +diff + " | bid: "+bid);
+		
+		
+		return (long) bid;
 	}
 
 	
@@ -220,7 +222,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		List<Plan> plans = new ArrayList<Plan>();
 		
         
-		for(int m =0; m < 5000; m++) {
+		for(int m =0; m < numb_plan_computed; m++) {
 			
 		plans.clear();	
 		
