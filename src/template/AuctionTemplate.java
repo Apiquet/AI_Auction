@@ -37,7 +37,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	private long timeout_setup;
     private long timeout_plan;
     private long timeout_auction;
-    int averageProfit = 300;
+    int averageProfit = 600;
     
 	List<Act> listAct = new ArrayList<Act>();
 	ArrayList<Result> result_list = new ArrayList<Result>();
@@ -199,6 +199,7 @@ public class AuctionTemplate implements AuctionBehavior {
 			return (long) (3000/7)*coeff_bid;
 		}
 		
+		
 		//System.out.println(numb_plan_computed);
 		double bid;
 		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
@@ -209,7 +210,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		
 
 		
-		
+		if(task_list_agent.size()==1) return diff - averageProfit;
+
 		
 		//System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
 		
