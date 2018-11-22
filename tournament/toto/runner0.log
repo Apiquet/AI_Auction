@@ -1,0 +1,104 @@
+03:24:47.064 FINE | Run command: java -Xmx1024m -classpath logist/logist.jar logist.LogistPlatform -o tournament\toto\agents-YourName-montest.xml -a tournament\toto\agents.xml config\agents.xml YourName montest
+03:24:47.181 CONFIG | Reading config\agents.xml
+03:24:47.243 WARNING | logist.config.ParserException: Tag <root> has no 'settings' element
+03:24:47.248 WARNING | 	at logist.config.ParserException.missingTag(ParserException.java:13)
+03:24:47.249 WARNING | 	at logist.config.XMLTag.getUniqueChild(XMLTag.java:94)
+03:24:47.250 WARNING | 	at logist.config.ConfigParser.parse(ConfigParser.java:42)
+03:24:47.251 WARNING | 	at logist.config.Parsers.parseConfiguration(Parsers.java:30)
+03:24:47.252 WARNING | 	at logist.config.Parsers.parseConfiguration(Parsers.java:25)
+03:24:47.253 WARNING | 	at logist.LogistPlatform.main(LogistPlatform.java:116)
+03:24:47.256 SEVERE | LogistPlatform returned error code -2
+03:24:47.257 FINE | Run command: java -Xmx1024m -classpath logist/logist.jar logist.LogistPlatform -o tournament\toto\agents-montest-YourName.xml -a tournament\toto\agents.xml config\agents.xml montest YourName
+03:24:47.372 CONFIG | Reading config\agents.xml
+03:24:47.433 WARNING | logist.config.ParserException: Tag <root> has no 'settings' element
+03:24:47.434 WARNING | 	at logist.config.ParserException.missingTag(ParserException.java:13)
+03:24:47.436 WARNING | 	at logist.config.XMLTag.getUniqueChild(XMLTag.java:94)
+03:24:47.437 WARNING | 	at logist.config.ConfigParser.parse(ConfigParser.java:42)
+03:24:47.440 WARNING | 	at logist.config.Parsers.parseConfiguration(Parsers.java:30)
+03:24:47.440 WARNING | 	at logist.config.Parsers.parseConfiguration(Parsers.java:25)
+03:24:47.441 WARNING | 	at logist.LogistPlatform.main(LogistPlatform.java:116)
+03:24:47.447 SEVERE | LogistPlatform returned error code -2
+03:24:47.448 FINE | Run command: java -Xmx1024m -classpath logist/logist.jar logist.LogistPlatform -o tournament\toto\auction-YourName-montest.xml -a tournament\toto\agents.xml config\auction.xml YourName montest
+03:24:47.569 CONFIG | Reading config\auction.xml
+03:24:47.632 CONFIG | Reading config\settings_auction.xml
+03:24:47.688 CONFIG | Reading config\topology\england.xml
+03:24:47.705 CONFIG | Reading tournament\toto\agents.xml
+03:24:47.722 CONFIG | Reading config\settings_auction.xml
+03:24:47.725 CONFIG | Reading config\settings_auction.xml
+03:24:47.817 CONFIG | New cost agent : 2191 | diff agent: 2191 | bid: 2192.0
+03:24:47.865 CONFIG | New cost agent : 4573 | diff agent: 2382 | bid: 2383.0
+03:24:47.920 CONFIG | New cost agent : 4573 | diff agent: 0 | bid: 1.0
+03:24:47.963 CONFIG | New cost agent : 6087 | diff agent: 1514 | bid: 1515.0
+03:24:47.995 CONFIG | New cost agent : 6600 | diff agent: 719 | bid: 720.0
+03:24:48.038 CONFIG | New cost agent : 8717 | diff agent: 1584 | bid: 1585.0
+03:24:48.076 CONFIG | New cost agent : 9081 | diff agent: 1889 | bid: 1890.0
+03:24:48.117 CONFIG | New cost agent : 10840 | diff agent: 1493 | bid: 1494.0
+03:24:48.161 CONFIG | New cost agent : 13179 | diff agent: 2233 | bid: 2234.0
+03:24:48.209 CONFIG | New cost agent : 14929 | diff agent: 561 | bid: 562.0
+03:24:48.270 CONFIG | New cost agent : 16299 | diff agent: 1297 | bid: 1298.0
+03:24:48.345 CONFIG | New cost agent : 18570 | diff agent: 1709 | bid: 1710.0
+03:24:48.399 CONFIG | New cost agent : 20805 | diff agent: 2410 | bid: 2411.0
+03:24:48.460 CONFIG | New cost agent : 23270 | diff agent: 2100 | bid: 2101.0
+03:24:48.544 CONFIG | New cost agent : 26023 | diff agent: 3302 | bid: 3303.0
+03:24:48.618 CONFIG | New cost agent : 27133 | diff agent: 2270 | bid: 2271.0
+03:24:48.721 CONFIG | New cost agent : 27950 | diff agent: 2317 | bid: 2318.0
+03:24:48.830 CONFIG | New cost agent : 28413 | diff agent: 1101 | bid: 1102.0
+03:24:48.913 CONFIG | New cost agent : 33582 | diff agent: 4113 | bid: 4114.0
+03:24:48.999 CONFIG | New cost agent : 30580 | diff agent: 47 | bid: 48.0
+03:24:51.878 CONFIG | FINAL PLAN COST: 30942.0
+03:24:51.878 CONFIG | []
+03:24:51.881 WARNING | Exception in thread "Thread-4" logist.LogistException: agent montest crashed: java.lang.IllegalArgumentException: bound must be positive
+03:24:51.882 WARNING | 	at logist.agent.TimeoutGuard.schedule(TimeoutGuard.java:34)
+03:24:51.884 WARNING | 	at logist.agent.AuctionAgent.nextAction(AuctionAgent.java:120)
+03:24:51.888 WARNING | 	at logist.simulation.VehicleImpl.executeNextAction(VehicleImpl.java:84)
+03:24:51.889 WARNING | 	at logist.simulation.Simulation.step(Simulation.java:108)
+03:24:51.890 WARNING | 	at logist.gui.SimulationModel$1.execute(SimulationModel.java:157)
+03:24:51.890 WARNING | 	at uchicago.src.sim.engine.ScheduleGroup.execute(Unknown Source)
+03:24:51.891 WARNING | 	at uchicago.src.sim.engine.RandomScheduleGroup.execute(Unknown Source)
+03:24:51.892 WARNING | 	at uchicago.src.sim.engine.Schedule.execute(Unknown Source)
+03:24:51.894 WARNING | 	at uchicago.src.sim.engine.BaseController$1.run(Unknown Source)
+03:24:51.895 WARNING | 	at java.lang.Thread.run(Unknown Source)
+03:24:51.896 WARNING | Caused by: java.util.concurrent.ExecutionException: java.lang.IllegalArgumentException: bound must be positive
+03:24:51.896 WARNING | 	at java.util.concurrent.FutureTask.report(Unknown Source)
+03:24:51.897 WARNING | 	at java.util.concurrent.FutureTask.get(Unknown Source)
+03:24:51.898 WARNING | 	at logist.agent.TimeoutGuard.schedule(TimeoutGuard.java:29)
+03:24:51.898 WARNING | 	... 9 more
+03:24:51.899 WARNING | Caused by: java.lang.IllegalArgumentException: bound must be positive
+03:24:51.900 WARNING | 	at java.util.Random.nextInt(Unknown Source)
+03:24:51.900 WARNING | 	at template.AuctionTemplate.optimize(AuctionTemplate.java:514)
+03:24:51.901 WARNING | 	at template.AuctionTemplate.plan(AuctionTemplate.java:240)
+03:24:51.901 WARNING | 	at logist.agent.AuctionAgent$3.call(AuctionAgent.java:132)
+03:24:51.902 WARNING | 	at logist.agent.AuctionAgent$3.call(AuctionAgent.java:1)
+03:24:51.903 WARNING | 	at java.util.concurrent.FutureTask.run(Unknown Source)
+03:24:51.907 WARNING | 	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+03:24:51.908 WARNING | 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+03:24:51.909 WARNING | 	... 1 more
+03:27:37.425 INFO | LogistPlatform finished successfully!
+03:27:37.426 FINE | Run command: java -Xmx1024m -classpath logist/logist.jar logist.LogistPlatform -o tournament\toto\auction-montest-YourName.xml -a tournament\toto\agents.xml config\auction.xml montest YourName
+03:27:37.632 CONFIG | Reading config\auction.xml
+03:27:37.764 CONFIG | Reading config\settings_auction.xml
+03:27:37.841 CONFIG | Reading config\topology\england.xml
+03:27:37.882 CONFIG | Reading tournament\toto\agents.xml
+03:27:37.941 CONFIG | Reading config\settings_auction.xml
+03:27:37.945 CONFIG | Reading config\settings_auction.xml
+03:27:38.057 CONFIG | New cost agent : 2766 | diff agent: 2766 | bid: 2767.0
+03:27:38.108 CONFIG | New cost agent : 3279 | diff agent: 3279 | bid: 3280.0
+03:27:38.155 CONFIG | New cost agent : 2789 | diff agent: 2789 | bid: 2790.0
+03:27:38.212 CONFIG | New cost agent : 4947 | diff agent: 2158 | bid: 2159.0
+03:27:38.251 CONFIG | New cost agent : 5896 | diff agent: 949 | bid: 950.0
+03:27:38.293 CONFIG | New cost agent : 5896 | diff agent: 0 | bid: 1.0
+03:27:38.342 CONFIG | New cost agent : 6863 | diff agent: 766 | bid: 767.0
+03:27:38.394 CONFIG | New cost agent : 8987 | diff agent: 1986 | bid: 1987.0
+03:27:38.453 CONFIG | New cost agent : 9839 | diff agent: 1826 | bid: 1827.0
+03:27:38.517 CONFIG | New cost agent : 12171 | diff agent: 2003 | bid: 2004.0
+03:27:38.581 CONFIG | New cost agent : 13074 | diff agent: 687 | bid: 688.0
+03:27:38.653 CONFIG | New cost agent : 12728 | diff agent: -2060 | bid: 1.0
+03:27:38.731 CONFIG | New cost agent : 17204 | diff agent: 3337 | bid: 3338.0
+03:27:38.814 CONFIG | New cost agent : 16842 | diff agent: 1009 | bid: 1010.0
+03:27:38.902 CONFIG | New cost agent : 19647 | diff agent: 2223 | bid: 2224.0
+03:27:38.996 CONFIG | New cost agent : 20215 | diff agent: 1534 | bid: 1535.0
+03:27:39.097 CONFIG | New cost agent : 23215 | diff agent: 2479 | bid: 2480.0
+03:27:39.228 CONFIG | New cost agent : 23938 | diff agent: 3554 | bid: 3555.0
+03:27:39.328 CONFIG | New cost agent : 23026 | diff agent: 3267 | bid: 3268.0
+03:27:39.433 CONFIG | New cost agent : 26829 | diff agent: 3828 | bid: 3829.0
+03:27:42.380 INFO | LogistPlatform finished successfully!

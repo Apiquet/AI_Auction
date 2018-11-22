@@ -36,6 +36,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	private City currentCity;
 	private long timeout_setup;
     private long timeout_plan;
+    private long timeout_auction;
 	List<Act> listAct = new ArrayList<Act>();
 	ArrayList<Result> result_list = new ArrayList<Result>();
     
@@ -54,7 +55,7 @@ public class AuctionTemplate implements AuctionBehavior {
     long number_iter = 0; 
     long number_iter_max = 5000; // number of iteration with a same plan before restart 
     //FastPlan
-    int numb_plan_computed = 5000;
+    int numb_plan_computed = 2000;
     
     
     List<Task> task_list_agent = new ArrayList<Task>();
@@ -65,7 +66,7 @@ public class AuctionTemplate implements AuctionBehavior {
     List<Result> result_list_agent = new ArrayList<Result>();
     List<Result> result_list_enemy = new ArrayList<Result>();
     long cost_agent_previous,cost_enemy_previous;
-    
+    double profit_agent ;
 	@Override
 	public void setup(Topology topology, TaskDistribution distribution,
 			Agent agent) {
@@ -78,7 +79,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		this.currentCity = vehicle.homeCity();
 		long seed = -9019554669489983951L * currentCity.hashCode() * agent.id();
 		this.random = new Random(seed);
-		
+		profit_agent = 0;
 		 LogistSettings ls = null;
 	        try {
 	            ls = Parsers.parseSettings("config\\settings_auction.xml");
@@ -91,6 +92,8 @@ public class AuctionTemplate implements AuctionBehavior {
         timeout_setup = ls.get(LogistSettings.TimeoutKey.SETUP);
         // the plan method cannot execute more than timeout_plan milliseconds
         timeout_plan = ls.get(LogistSettings.TimeoutKey.PLAN);
+        
+        timeout_auction = ls.get(LogistSettings.TimeoutKey.BID);
 	}
 
 	@Override
@@ -104,38 +107,78 @@ public class AuctionTemplate implements AuctionBehavior {
 			currentCity = previous.deliveryCity;
 		}
 		else {result_list_enemy.add(result);
+		
 		task_list_agent.remove(task_list_agent.size()-1);}
 		
 	}
 	
 	@Override
 	public Long askPrice(Task task) {
-		if(task_list_agent.size() >= 1) {cost_agent_previous = fast_plan(vehicles_list, task_list_agent);} //previous plan
+		long time_start = System.currentTimeMillis();
+		
+		for(int i = 0 ; i < vehicles_list.size(); i++) {
+			
+			if(task.weight > vehicles_list.get(i).capacity()) 
+			{	
+				task_list_agent.add(task);
+				task_list_enemy.add(task);
+				return null;
+			}
+		}
+		
+		//previous plan
+		if(task_list_agent.size() >= 1) 
+			{cost_agent_previous = fast_plan(vehicles_list, task_list_agent);
+			
+			} 
+		else {cost_agent_previous  = 0;}
+		if(task_list_enemy.size() >= 1) 
+		{cost_enemy_previous = fast_plan(vehicles_list, task_list_enemy);
+		}
+		else {cost_enemy_previous = 0;}
 		
 		task_list_agent.add(task);
 		task_list_enemy.add(task);
-		long cost_agent,cost_enemy;
-		cost_agent = fast_plan(vehicles_list, task_list_agent);
+		
+        long time_end = System.currentTimeMillis();
+        long duration = time_end - time_start;
+        
+		long cost_agent,cost_enemy,new_cost_agent,new_cost_enemy;
+		cost_agent = fast_plan(vehicles_list, task_list_agent);	
 		cost_enemy = fast_plan(vehicles_list, task_list_enemy);
+		
+		while(duration < timeout_auction*0.5) {
+			new_cost_agent = fast_plan(vehicles_list, task_list_agent);	
+			new_cost_enemy = fast_plan(vehicles_list, task_list_enemy);
+			if(new_cost_agent<cost_agent) {cost_agent = new_cost_agent;}
+			if(new_cost_enemy<cost_enemy) {cost_enemy = new_cost_enemy;}
+			time_end = System.currentTimeMillis();
+	        duration = time_end - time_start;
+	        
+		}
+		
+		
+		 
+		//System.out.println(numb_plan_computed);
 		double bid;
 		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
 		if(diff <= 0) { bid = 1 ;}
-		else { bid  = diff + 1  ;}
+		else { bid  = diff*1.1   ;}
 		
 	
 		
 		
 		
-		System.out.println("New cost agent : "+cost_agent +" | diff agent: " +diff + " | bid: "+bid);
+		System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
 		
-		
+		profit_agent = profit_agent + bid;
 		return (long) bid;
 	}
 
 	
 	public long fast_plan(List<Vehicle> vehicles_list,  List<Task> task_list) {
 		
-
+		
         //INITIALIZATION
         cost = 9999999;
         
@@ -218,12 +261,13 @@ public class AuctionTemplate implements AuctionBehavior {
     	
         	
 		
-		
+    	
 		List<Plan> plans = new ArrayList<Plan>();
 		
         
-		for(int m =0; m < numb_plan_computed; m++) {
-			
+		for(int m =0; m < numb_plan_computed; m++)
+		{
+        
 		plans.clear();	
 		
 		for(int i = 0 ; i< vehicles_list.size(); i++)
@@ -253,6 +297,7 @@ public class AuctionTemplate implements AuctionBehavior {
         
         //OPIMIZATION = finding a better neigbour , if can't find after a number of iteration restart from initial solution
         nextTask = optimize( vehicles_list, taskList,plans,true);
+        
         
 		}
 
