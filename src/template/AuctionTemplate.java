@@ -256,8 +256,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		}
 			
 		//Decreasing bids if enemy too competitive (if we got less than tasks number / 2)
-		if(!enemy_influenced && bids_count>8) {
-			if(task_list_agent.size()<bids_count/2-1) averageProfit=averageProfit*0.9;
+		if(!enemy_influenced && bids_count>7 && bids_count % 2 == 0) {
+			if(task_list_agent.size()<bids_count/2) averageProfit=averageProfit*0.92;
 		}
 		
 		//As we calculate diff as: (cost with the new task) less (cost without it), for the first task we will bet 
