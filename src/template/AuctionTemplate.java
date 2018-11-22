@@ -37,7 +37,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	private long timeout_setup;
     private long timeout_plan;
     private long timeout_auction;
-    int averageProfit = 600;
+    double averageProfit = 600;
     Long avg_bids_enemy = (long) 0;
 	List<Act> listAct = new ArrayList<Act>();
 	ArrayList<Result> result_list = new ArrayList<Result>();
@@ -210,6 +210,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		//System.out.println(numb_plan_computed);
 		double bid;
 		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
+		
         //System.out.println("diff: " + diff);
         //if(diff>1500) diff=1500;
 		if(diff <= 0) { bid = averageProfit ;}
@@ -222,17 +223,20 @@ public class AuctionTemplate implements AuctionBehavior {
 		if(bids_count==4) {
 			if(avg_bids_enemy*2 < result_list_enemy.get(result_list_enemy.size()-1).get_bids()/(diff_enemy));{
 				enemy_influenced = true;
-				System.out.println("Bingo!");
+				System.out.println("Enemy was influenced!");
 			}
 		}
 		if(enemy_influenced) {
 			if(bids_count==11) return (long) 100000;
-			if(bids_count> 11 && bids_count < 14) return diff + averageProfit*4;
+			if(bids_count> 11 && bids_count < 14) return (long) (diff + averageProfit*4);
 		}
 			
-				
 		
-		if(task_list_agent.size()==1) return diff - averageProfit;
+		if(!enemy_influenced && bids_count>8) {
+			if(task_list_agent.size()<bids_count/2-1) averageProfit=averageProfit*0.9;
+		}
+		
+		if(task_list_agent.size()==1) return (long) (diff - averageProfit);
 
 		
 		//System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
