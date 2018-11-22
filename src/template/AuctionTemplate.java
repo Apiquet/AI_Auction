@@ -43,6 +43,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	double cost;
     double nextcost;
     double bestcost;
+    boolean wrong_bid = true;
     List<Plan> bestPlans = new ArrayList<Plan>(); // bestplan for this path
     List<Plan> ultraPlans = new ArrayList<Plan>(); // Bestplan overall
     
@@ -94,6 +95,7 @@ public class AuctionTemplate implements AuctionBehavior {
         timeout_plan = ls.get(LogistSettings.TimeoutKey.PLAN);
         
         timeout_auction = ls.get(LogistSettings.TimeoutKey.BID);
+        
 	}
 
 	@Override
@@ -145,7 +147,8 @@ public class AuctionTemplate implements AuctionBehavior {
         
 		long cost_agent,cost_enemy,new_cost_agent,new_cost_enemy;
 		cost_agent = fast_plan(vehicles_list, task_list_agent);	
-		cost_enemy = fast_plan(vehicles_list, task_list_enemy);
+		cost_enemy = fast_plan(vehicles_list, task_list_enemy);	
+		
 		
 		while(duration < timeout_auction*0.5) {
 			new_cost_agent = fast_plan(vehicles_list, task_list_agent);	
@@ -154,7 +157,7 @@ public class AuctionTemplate implements AuctionBehavior {
 			if(new_cost_enemy<cost_enemy) {cost_enemy = new_cost_enemy;}
 			time_end = System.currentTimeMillis();
 	        duration = time_end - time_start;
-	        
+	        System.out.println("nous: " + cost_agent + "eux: " + cost_enemy);
 		}
 		
 		
@@ -162,16 +165,21 @@ public class AuctionTemplate implements AuctionBehavior {
 		//System.out.println(numb_plan_computed);
 		double bid;
 		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
-		if(diff <= 0) { bid = 1 ;}
-		else { bid  = diff*1.1   ;}
+        System.out.println("diff: " + diff);
+        //if(diff>1500) diff=1500;
+		if(diff <= 0) { bid = 50 ;}
+		else { bid  = diff + 1   ;}
 		
-	
 		
 		
 		
-		System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
+		double rand = Math.random();
+		if(rand>0.89 && wrong_bid) {
+			wrong_bid = false;
+			return (long) 100000000;
+		}
+		//System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
 		
-		profit_agent = profit_agent + bid;
 		return (long) bid;
 	}
 
@@ -315,6 +323,7 @@ public class AuctionTemplate implements AuctionBehavior {
 	@Override
 	public List<Plan> plan(List<Vehicle> vehicles, TaskSet tasks) {
         long time_start = System.currentTimeMillis();
+        
         
         //INITIALIZATION
         cost = 9999999;
@@ -460,8 +469,10 @@ public class AuctionTemplate implements AuctionBehavior {
 		}
 		List<Plan> re;
 		//return the bestPLAN with the shortest distance
-		if(bestcost  > cost ) {re= bestPlans;
-		bestcost = cost;}
+		if(bestcost  > cost ) {
+			re= bestPlans;
+			bestcost = cost;
+		}
 		else {re= ultraPlans;}
 		
 		System.out.println("FINAL PLAN COST: "+ bestcost );
