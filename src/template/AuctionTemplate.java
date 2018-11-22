@@ -38,14 +38,15 @@ public class AuctionTemplate implements AuctionBehavior {
     private long timeout_plan;
     private long timeout_auction;
     int averageProfit = 600;
-    
+    Long avg_bids_enemy = (long) 0;
 	List<Act> listAct = new ArrayList<Act>();
 	ArrayList<Result> result_list = new ArrayList<Result>();
     
 	double cost;
     double nextcost;
     double bestcost;
-    int wrong_bid = 0;
+    int bids_count = 0;
+    boolean enemy_influenced = false;
     List<Plan> bestPlans = new ArrayList<Plan>(); // bestplan for this path
     List<Plan> ultraPlans = new ArrayList<Plan>(); // Bestplan overall
     
@@ -125,17 +126,23 @@ public class AuctionTemplate implements AuctionBehavior {
 
 	@Override
 	public void auctionResult(Task previous, int winner, Long[] bids) {
-		Result result = new Result(previous,winner,bids);
 		
 		
 		if (winner == agent.id()) {
+			System.out.println("we win with bid: " + bids[agent.id()]);
+			Result result = new Result(previous,winner,bids[winner]);
 			result_list_agent.add(result);
 			task_list_enemy.remove(task_list_enemy.size()-1);
 			currentCity = previous.deliveryCity;
 		}
-		else {result_list_enemy.add(result);
-		
-		task_list_agent.remove(task_list_agent.size()-1);}
+		else {
+			System.out.println("they win with bid: " + bids[winner]);
+
+			Result result = new Result(previous,winner,bids[winner]);
+
+			result_list_enemy.add(result);
+			task_list_agent.remove(task_list_agent.size()-1);
+		}
 		
 	}
 	
@@ -188,14 +195,14 @@ public class AuctionTemplate implements AuctionBehavior {
 		
 		
 		double rand = Math.random();
-		wrong_bid ++;
-		if(wrong_bid == 2) {
+		bids_count ++;
+		if(bids_count == 2) {
 			return (long) 1000*coeff_bid;
 		}
-		else if(wrong_bid == 3) {
+		else if(bids_count == 3) {
 			return (long) (2000/7)*coeff_bid;
 		}
-		else if(wrong_bid == 1) {
+		else if(bids_count == 1) {
 			return (long) (3000/7)*coeff_bid;
 		}
 		
@@ -208,7 +215,22 @@ public class AuctionTemplate implements AuctionBehavior {
 		if(diff <= 0) { bid = averageProfit ;}
 		else { bid  = diff + averageProfit - 100   ;}
 		
-
+		double diff_enemy = cost_enemy-cost_enemy_previous+1;
+		if(bids_count==2) 
+			avg_bids_enemy = (long) (result_list_enemy.get(result_list_enemy.size()-1).get_bids()/(diff_enemy));
+		
+		if(bids_count==4) {
+			if(avg_bids_enemy*2 < result_list_enemy.get(result_list_enemy.size()-1).get_bids()/(diff_enemy));{
+				enemy_influenced = true;
+				System.out.println("Bingo!");
+			}
+		}
+		if(enemy_influenced) {
+			if(bids_count==11) return (long) 100000;
+			if(bids_count> 11 && bids_count < 14) return diff + averageProfit*4;
+		}
+			
+				
 		
 		if(task_list_agent.size()==1) return diff - averageProfit;
 
@@ -932,9 +954,9 @@ class Act{
 class Result{
 	private Task task;
 	private int winner;
-	private Long[] bids;
+	private Long bids;
 	
-	public Result(Task task, int winner, Long[] bids) 
+	public Result(Task task, int winner, Long bids) 
 	{		
 		this.winner = winner;
 		this.bids = bids;
@@ -949,7 +971,7 @@ class Result{
 	public Task get_task() {
 		return this.task;
 	}
-	public Long[] get_bids() {
+	public Long get_bids() {
 		return this.bids;
 	}	
 	 
