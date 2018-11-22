@@ -167,8 +167,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
         System.out.println("diff: " + diff);
         //if(diff>1500) diff=1500;
-		if(diff <= 0) { bid = 50 ;}
-		else { bid  = diff + 1   ;}
+		if(diff <= 0) { bid = 200 ;}
+		else { bid  = diff   ;}
 		
 		
 		
