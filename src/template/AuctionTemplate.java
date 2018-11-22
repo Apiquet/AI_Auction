@@ -37,13 +37,15 @@ public class AuctionTemplate implements AuctionBehavior {
 	private long timeout_setup;
     private long timeout_plan;
     private long timeout_auction;
+    int averageProfit = 300;
+    
 	List<Act> listAct = new ArrayList<Act>();
 	ArrayList<Result> result_list = new ArrayList<Result>();
     
 	double cost;
     double nextcost;
     double bestcost;
-    boolean wrong_bid = true;
+    int wrong_bid = 0;
     List<Plan> bestPlans = new ArrayList<Plan>(); // bestplan for this path
     List<Plan> ultraPlans = new ArrayList<Plan>(); // Bestplan overall
     
@@ -57,7 +59,7 @@ public class AuctionTemplate implements AuctionBehavior {
     long number_iter_max = 5000; // number of iteration with a same plan before restart 
     //FastPlan
     int numb_plan_computed = 2000;
-    
+    int coeff_bid = 7;
     
     List<Task> task_list_agent = new ArrayList<Task>();
     List<Task> task_list_enemy = new ArrayList<Task>();
@@ -73,6 +75,28 @@ public class AuctionTemplate implements AuctionBehavior {
 			Agent agent) {
 
 		this.topology = topology;
+		String city_name = topology.cities().get(0).name;
+		if(city_name.equals("London")) {
+			System.out.println("London");
+			coeff_bid = 7;
+			averageProfit = 750;
+		}
+		else if(city_name.equals("Brest")) {
+			System.out.println("Brest");
+			coeff_bid = 26;
+			averageProfit= 2400;
+		}
+		else if(city_name.equals("Lausanne")) {
+			System.out.println("Lausanne");
+			averageProfit = 300;
+		}
+		else if(city_name.equals("Amsterdam")) {
+			System.out.println("Amsterdam");
+			coeff_bid = 7;
+			averageProfit = 500;
+		}else {
+			System.out.println("else: " + topology.cities().get(0).name);
+		}
 		this.distribution = distribution;
 		this.agent = agent;
 		vehicles_list = agent.vehicles();
@@ -128,6 +152,7 @@ public class AuctionTemplate implements AuctionBehavior {
 			}
 		}
 		
+		
 		//previous plan
 		if(task_list_agent.size() >= 1) 
 			{cost_agent_previous = fast_plan(vehicles_list, task_list_agent);
@@ -157,27 +182,34 @@ public class AuctionTemplate implements AuctionBehavior {
 			if(new_cost_enemy<cost_enemy) {cost_enemy = new_cost_enemy;}
 			time_end = System.currentTimeMillis();
 	        duration = time_end - time_start;
-	        System.out.println("nous: " + cost_agent + "eux: " + cost_enemy);
+	        //System.out.println("nous: " + cost_agent + "eux: " + cost_enemy);
 		}
-		
-		
-		 
-		//System.out.println(numb_plan_computed);
-		double bid;
-		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
-        System.out.println("diff: " + diff);
-        //if(diff>1500) diff=1500;
-		if(diff <= 0) { bid = 200 ;}
-		else { bid  = diff   ;}
-		
-		
 		
 		
 		double rand = Math.random();
-		if(rand>0.89 && wrong_bid) {
-			wrong_bid = false;
-			return (long) 100000000;
+		wrong_bid ++;
+		if(wrong_bid == 2) {
+			return (long) 1000*coeff_bid;
 		}
+		else if(wrong_bid == 3) {
+			return (long) (2000/7)*coeff_bid;
+		}
+		else if(wrong_bid == 1) {
+			return (long) (3000/7)*coeff_bid;
+		}
+		
+		//System.out.println(numb_plan_computed);
+		double bid;
+		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
+        //System.out.println("diff: " + diff);
+        //if(diff>1500) diff=1500;
+		if(diff <= 0) { bid = averageProfit ;}
+		else { bid  = diff + averageProfit - 100   ;}
+		
+
+		
+		
+		
 		//System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
 		
 		return (long) bid;
