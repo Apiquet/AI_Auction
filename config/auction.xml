@@ -7,7 +7,7 @@
 	<settings import="config/settings_auction.xml" />
 	
 	<!-- load the topology from an external file -->
-	<topology import="config/topology/france.xml" />
+	<topology import="config/topology/switzerland.xml" />
 	
 	<!-- load agents from an external file -->
 	<agents import="config/agents.xml" />
@@ -30,7 +30,7 @@
 			<!-- the first vehicle (blue) -->
 			<vehicle name="Vehicle 1">
 				<set color="#0000ff" />
-				<set home="Brest" />
+				<set home="Lausanne" />
 				<set speed="90" />
 				<set capacity="30" />
 				<set cost-per-km="5" />
@@ -39,7 +39,7 @@
 			<!-- the second vehicle (red) -->
 			<vehicle name="Vehicle 2">
 				<set color="#ff0000" />
-				<set home="Paris" />
+				<set home="Basel" />
 				<set speed="90" />
 				<set capacity="30" />
 				<set cost-per-km="5" />
@@ -50,7 +50,7 @@
 			<!-- the third vehicle (green) -->
 			<vehicle name="Vehicle 3">
 				<set color="#00ff00" />
-				<set home="Marseille" />
+				<set home="Zürich" />
 				<set speed="90" />
 				<set capacity="30" />
 				<set cost-per-km="5" />
@@ -59,7 +59,7 @@
 			<!-- the fourth vehicle (yellow) -->
 			<vehicle name="Vehicle 4">
 				<set color="#ffff00" />
-				<set home="Paris" />
+				<set home="Thun" />
 				<set speed="90" />
 				<set capacity="30" />
 				<set cost-per-km="5" />
@@ -70,7 +70,7 @@
 			<!-- the fifth vehicle (magenta) -->
 			<vehicle name="Vehicle 5">
 				<set color="#ff00ff" />
-				<set home="Lyon" />
+				<set home="Neuchâtel" />
 				<set speed="90" />
 				<set capacity="30" />
 				<set cost-per-km="5" />
@@ -79,7 +79,7 @@
 			<!-- the sixth vehicle (cyan) -->
 			<vehicle name="Vehicle 6">
 				<set color="#00ffff" />
-				<set home="Strasbourg" />
+				<set home="Sion" />
 				<set speed="90" />
 				<set capacity="30" />
 				<set cost-per-km="5" />

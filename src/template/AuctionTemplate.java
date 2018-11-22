@@ -88,7 +88,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		}
 		else if(city_name.equals("Lausanne")) {
 			System.out.println("Lausanne");
-			averageProfit = 300;
+			coeff_bid = 10;
+			averageProfit = 600;
 		}
 		else if(city_name.equals("Amsterdam")) {
 			System.out.println("Amsterdam");
