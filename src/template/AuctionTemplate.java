@@ -62,7 +62,7 @@ public class AuctionTemplate implements AuctionBehavior {
     Long avg_bids_enemy = (long) 0; //variable to verify how the enemy react
 
     
-    double averageProfit = 600; //coeff to set the profit that we will ajust in function of the enemy
+    double averageProfit = 600; //coeff to set the profit that we will adjust in function of the enemy
     int coeff_bid = 7;
 
     
@@ -80,6 +80,9 @@ public class AuctionTemplate implements AuctionBehavior {
 
 		this.topology = topology;
 		String city_name = topology.cities().get(0).name;
+		
+		//verifying the topology to adapt our bids strategy
+		//it's based on the average distance between the cities.
 		if(city_name.equals("London")) {
 			System.out.println("London");
 			coeff_bid = 7;
@@ -102,6 +105,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		}else {
 			System.out.println("else: " + topology.cities().get(0).name);
 		}
+		
+		//set up given
 		this.distribution = distribution;
 		this.agent = agent;
 		vehicles_list = agent.vehicles();
