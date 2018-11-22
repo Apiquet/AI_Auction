@@ -37,40 +37,43 @@ public class AuctionTemplate implements AuctionBehavior {
 	private long timeout_setup;
     private long timeout_plan;
     private long timeout_auction;
-    double averageProfit = 600;
-    Long avg_bids_enemy = (long) 0;
 	List<Act> listAct = new ArrayList<Act>();
-	ArrayList<Result> result_list = new ArrayList<Result>();
     
-	double cost;
+	
+    // variables for the centralized algorithm:
+    double cost;
     double nextcost;
     double bestcost;
-    int bids_count = 0;
-    boolean enemy_influenced = false;
+    long number_iter = 0; 
+    long number_iter_max = 5000; // number of iteration with a same plan before restart 
+    //FastPlan
+    int numb_plan_computed = 2000;
     List<Plan> bestPlans = new ArrayList<Plan>(); // bestplan for this path
     List<Plan> ultraPlans = new ArrayList<Plan>(); // Bestplan overall
     
     Hashtable<Integer, List<Act>> nextTask = new Hashtable<Integer, List<Act>>();
     Hashtable<Integer, List<Act>> nextTask_clone = new Hashtable<Integer, List<Act>>();
-	
     
-    // CAN CHANGE THE NUMBERS
     
-    long number_iter = 0; 
-    long number_iter_max = 5000; // number of iteration with a same plan before restart 
-    //FastPlan
-    int numb_plan_computed = 2000;
+    // variables for auction strategy:
+    int bids_count = 0;
+    
+    boolean enemy_influenced = false; //boolean to store the information if we detect that the enemy got influenced
+    Long avg_bids_enemy = (long) 0; //variable to verify how the enemy react
+
+    
+    double averageProfit = 600; //coeff to set the profit that we will ajust in function of the enemy
     int coeff_bid = 7;
+
     
-    List<Task> task_list_agent = new ArrayList<Task>();
+    List<Task> task_list_agent = new ArrayList<Task>(); //our and their tasks list
     List<Task> task_list_enemy = new ArrayList<Task>();
-    
+
+    List<Result> result_list_enemy = new ArrayList<Result>(); //all the bids and results of the enemy
+
     List<Vehicle> vehicles_list; 
-    //Auction
-    List<Result> result_list_agent = new ArrayList<Result>();
-    List<Result> result_list_enemy = new ArrayList<Result>();
-    long cost_agent_previous,cost_enemy_previous;
-    double profit_agent ;
+    
+    
 	@Override
 	public void setup(Topology topology, TaskDistribution distribution,
 			Agent agent) {
@@ -106,7 +109,6 @@ public class AuctionTemplate implements AuctionBehavior {
 		this.currentCity = vehicle.homeCity();
 		long seed = -9019554669489983951L * currentCity.hashCode() * agent.id();
 		this.random = new Random(seed);
-		profit_agent = 0;
 		 LogistSettings ls = null;
 	        try {
 	            ls = Parsers.parseSettings("config\\settings_auction.xml");
@@ -129,17 +131,19 @@ public class AuctionTemplate implements AuctionBehavior {
 		
 		
 		if (winner == agent.id()) {
-			System.out.println("we win with bid: " + bids[agent.id()]);
+			//System.out.println("we win with bid: " + bids[agent.id()]);
+			//updating our table:
+			// 1- list of all the tasks won
 			Result result = new Result(previous,winner,bids[winner]);
-			result_list_agent.add(result);
 			task_list_enemy.remove(task_list_enemy.size()-1);
 			currentCity = previous.deliveryCity;
 		}
 		else {
-			System.out.println("they win with bid: " + bids[winner]);
-
+			//System.out.println("they win with bid: " + bids[winner]);
+			//updating enemy's tables:
+			// 1- list of all the bids
+			// 2- list of all the tasks won
 			Result result = new Result(previous,winner,bids[winner]);
-
 			result_list_enemy.add(result);
 			task_list_agent.remove(task_list_agent.size()-1);
 		}
@@ -150,39 +154,48 @@ public class AuctionTemplate implements AuctionBehavior {
 	public Long askPrice(Task task) {
 		long time_start = System.currentTimeMillis();
 		
-		for(int i = 0 ; i < vehicles_list.size(); i++) {
-			
-			if(task.weight > vehicles_list.get(i).capacity()) 
+		//verify that a task is not too heavy for our vehicles
+		//return null if no vehicle has the capacity to take the task
+		boolean can_a_vehicle_take_task = false;
+		for(int i = 0 ; i < vehicles_list.size(); i++) {			
+			if(task.weight < vehicles_list.get(i).capacity()) 
 			{	
-				task_list_agent.add(task);
-				task_list_enemy.add(task);
-				return null;
+				can_a_vehicle_take_task=true;
+				break;
 			}
 		}
+		if(!can_a_vehicle_take_task) {
+			task_list_agent.add(task);
+			task_list_enemy.add(task);
+			return null;
+		}
 		
-		
-		//previous plan
-		if(task_list_agent.size() >= 1) 
-			{cost_agent_previous = fast_plan(vehicles_list, task_list_agent);
-			
-			} 
+		//calculating our plan and the one of the enemy without the new task to then determine the cost of adding 
+		//the new task in our task list
+	    long cost_agent_previous,cost_enemy_previous;
+		if(task_list_agent.size() >= 1){
+			cost_agent_previous = fast_plan(vehicles_list, task_list_agent);
+		} 
 		else {cost_agent_previous  = 0;}
 		if(task_list_enemy.size() >= 1) 
 		{cost_enemy_previous = fast_plan(vehicles_list, task_list_enemy);
 		}
 		else {cost_enemy_previous = 0;}
 		
+		//adding the new task to our tasks list and the enemy's tasks list (will be removed from the list of the looser in auctionResult)
 		task_list_agent.add(task);
 		task_list_enemy.add(task);
 		
         long time_end = System.currentTimeMillis();
         long duration = time_end - time_start;
         
+        
+        //calculating cost of the new plan (with the new task) for us and the enemy (with our algorithm but it give us an idea)
 		long cost_agent,cost_enemy,new_cost_agent,new_cost_enemy;
 		cost_agent = fast_plan(vehicles_list, task_list_agent);	
 		cost_enemy = fast_plan(vehicles_list, task_list_enemy);	
 		
-		
+		//looking for an optimal plan, considering the time we have
 		while(duration < timeout_auction*0.5) {
 			new_cost_agent = fast_plan(vehicles_list, task_list_agent);	
 			new_cost_enemy = fast_plan(vehicles_list, task_list_enemy);
@@ -190,11 +203,9 @@ public class AuctionTemplate implements AuctionBehavior {
 			if(new_cost_enemy<cost_enemy) {cost_enemy = new_cost_enemy;}
 			time_end = System.currentTimeMillis();
 	        duration = time_end - time_start;
-	        //System.out.println("nous: " + cost_agent + "eux: " + cost_enemy);
 		}
 		
-		
-		double rand = Math.random();
+		//return large bids for the firsts tasks to determine if the enemy got influenced
 		bids_count ++;
 		if(bids_count == 2) {
 			return (long) 1000*coeff_bid;
@@ -207,15 +218,20 @@ public class AuctionTemplate implements AuctionBehavior {
 		}
 		
 		
-		//System.out.println(numb_plan_computed);
 		double bid;
-		long diff = cost_agent - cost_agent_previous; //distance difference with previous plan
+		//finding the cost that the current task cause (cost of the plan with the task less the cost of a plan without)
+		long diff = cost_agent - cost_agent_previous; 
 		
-        //System.out.println("diff: " + diff);
-        //if(diff>1500) diff=1500;
+        //determine our bids
 		if(diff <= 0) { bid = averageProfit ;}
 		else { bid  = diff + averageProfit - 100   ;}
 		
+		
+		//Trying to detect if the enemy is influenced by large bids
+		//Based on the possible cost they have (computed with our algorithm) we determine if there big increase in a wrong way
+		//In other words, if they increase their bids a lot (more than two times)
+		//the fact that we compute with our algorithm doesn't matter because we just evaluate the difference, 
+		//even if they have a better algorithm, the ratio doesn't change
 		double diff_enemy = cost_enemy-cost_enemy_previous+1;
 		if(bids_count==2) 
 			avg_bids_enemy = (long) (result_list_enemy.get(result_list_enemy.size()-1).get_bids()/(diff_enemy));
@@ -226,16 +242,22 @@ public class AuctionTemplate implements AuctionBehavior {
 				System.out.println("Enemy was influenced!");
 			}
 		}
+		
+		//if we detected that the enemy is influenced by large bids, we bet something realy big to increase our
+		//profit for the next tasks
 		if(enemy_influenced) {
-			if(bids_count==11) return (long) 100000;
-			if(bids_count> 11 && bids_count < 14) return (long) (diff + averageProfit*4);
+			if(bids_count==11) return (long) (20000/7)*coeff_bid;
+			if(bids_count> 11 && bids_count < 14) return (long) (diff + averageProfit*2);
 		}
 			
-		
+		//Decreasing bids if enemy too competitive (if we got less than tasks number / 2)
 		if(!enemy_influenced && bids_count>8) {
 			if(task_list_agent.size()<bids_count/2-1) averageProfit=averageProfit*0.9;
 		}
 		
+		//As we calculate diff as: (cost with the new task) less (cost without it), for the first task we will bet 
+		//a large number that is not representative of the real cost (because we will get other tasks which will allow us
+		//to compute a plan that minimize the cost.
 		if(task_list_agent.size()==1) return (long) (diff - averageProfit);
 
 		
@@ -537,7 +559,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		else {re= ultraPlans;}
 		
 		System.out.println("FINAL PLAN COST: "+ bestcost );
-		System.out.println(result_list.toString());
+		System.out.println("Tasks numer: " + task_list_agent.size());
 		
         return re;
 		

@@ -35,125 +35,125 @@
 					<bid agent="auction-random" bid="500"/>
 				</task>
 				<task id="5" pickup="Nijmegen" delivery="Groningen" weight="26" reward="29695">
-					<bid agent="auction-adversary" bid="1237"/>
+					<bid agent="auction-adversary" bid="1286"/>
 					<bid agent="auction-random" bid="937"/>
 				</task>
 				<task id="6" pickup="Almere" delivery="Utrecht" weight="26" reward="92712">
-					<bid agent="auction-adversary" bid="800"/>
-					<bid agent="auction-random" bid="1017"/>
+					<bid agent="auction-adversary" bid="743"/>
+					<bid agent="auction-random" bid="663"/>
 				</task>
 				<task id="7" pickup="Den Haag" delivery="Nijmegen" weight="28" reward="54405">
-					<bid agent="auction-adversary" bid="635"/>
-					<bid agent="auction-random" bid="500"/>
+					<bid agent="auction-adversary" bid="659"/>
+					<bid agent="auction-random" bid="570"/>
 				</task>
 				<task id="8" pickup="Apeldoorn" delivery="Almere" weight="21" reward="77731">
-					<bid agent="auction-adversary" bid="1064"/>
+					<bid agent="auction-adversary" bid="1143"/>
 					<bid agent="auction-random" bid="500"/>
 				</task>
 				<task id="9" pickup="Apeldoorn" delivery="Den Haag" weight="26" reward="47362">
-					<bid agent="auction-adversary" bid="934"/>
-					<bid agent="auction-random" bid="544"/>
+					<bid agent="auction-adversary" bid="843"/>
+					<bid agent="auction-random" bid="500"/>
 				</task>
 				<task id="10" pickup="Almere" delivery="Eindhoven" weight="12" reward="55300">
-					<bid agent="auction-adversary" bid="772"/>
-					<bid agent="auction-random" bid="100000"/>
+					<bid agent="auction-adversary" bid="836"/>
+					<bid agent="auction-random" bid="19999"/>
 				</task>
 				<task id="11" pickup="Breda" delivery="Nijmegen" weight="11" reward="71177">
-					<bid agent="auction-adversary" bid="7710"/>
-					<bid agent="auction-random" bid="1584"/>
+					<bid agent="auction-adversary" bid="2190"/>
+					<bid agent="auction-random" bid="232"/>
 				</task>
 				<task id="12" pickup="Rotterdam" delivery="Almere" weight="22" reward="67350">
-					<bid agent="auction-adversary" bid="7049"/>
-					<bid agent="auction-random" bid="1805"/>
+					<bid agent="auction-adversary" bid="1642"/>
+					<bid agent="auction-random" bid="1478"/>
 				</task>
 				<task id="13" pickup="Den Haag" delivery="Apeldoorn" weight="17" reward="47362">
-					<bid agent="auction-adversary" bid="6257"/>
-					<bid agent="auction-random" bid="986"/>
+					<bid agent="auction-adversary" bid="1980"/>
+					<bid agent="auction-random" bid="500"/>
 				</task>
 				<task id="14" pickup="Eindhoven" delivery="Nijmegen" weight="28" reward="81761">
-					<bid agent="auction-adversary" bid="5197"/>
-					<bid agent="auction-random" bid="1204"/>
+					<bid agent="auction-adversary" bid="1463"/>
+					<bid agent="auction-random" bid="1332"/>
 				</task>
 			</tasks>
 			<events>
 				<event id="0" time="0" vehicle="Vehicle 1" move="Almere"/>
 				<event id="1" time="0" vehicle="Vehicle 2" move="Breda"/>
 				<event id="2" time="0" vehicle="Vehicle 3" pickup="13"/>
-				<event id="3" time="0" vehicle="Vehicle 4" pickup="9"/>
+				<event id="3" time="0" vehicle="Vehicle 4" pickup="8"/>
 				<event id="4" time="300000000" vehicle="Vehicle 3" move="Rotterdam"/>
-				<event id="5" time="300000000" vehicle="Vehicle 4" pickup="8"/>
-				<event id="6" time="531666666" vehicle="Vehicle 1" pickup="6"/>
+				<event id="5" time="300000000" vehicle="Vehicle 4" move="Almere"/>
+				<event id="6" time="531666666" vehicle="Vehicle 1" pickup="10"/>
 				<event id="7" time="582222222" vehicle="Vehicle 3" pickup="12"/>
-				<event id="8" time="600000000" vehicle="Vehicle 4" move="Utrecht"/>
-				<event id="9" time="691111111" vehicle="Vehicle 2" pickup="0"/>
-				<event id="10" time="831666666" vehicle="Vehicle 1" pickup="10"/>
-				<event id="11" time="882222222" vehicle="Vehicle 3" move="Breda"/>
-				<event id="12" time="991111111" vehicle="Vehicle 2" move="Rotterdam"/>
-				<event id="13" time="1131666666" vehicle="Vehicle 1" move="Utrecht"/>
-				<event id="14" time="1344444444" vehicle="Vehicle 4" pickup="4"/>
-				<event id="15" time="1422222222" vehicle="Vehicle 3" pickup="11"/>
-				<event id="16" time="1531111111" vehicle="Vehicle 2" move="Den Haag"/>
-				<event id="17" time="1644444444" vehicle="Vehicle 4" move="Rotterdam"/>
-				<event id="18" time="1722222222" vehicle="Vehicle 3" move="Eindhoven"/>
-				<event id="19" time="1813333333" vehicle="Vehicle 2" pickup="1"/>
-				<event id="20" time="1853333332" vehicle="Vehicle 1" deliver="6"/>
-				<event id="21" time="2113333333" vehicle="Vehicle 2" move="Amsterdam"/>
-				<event id="22" time="2153333332" vehicle="Vehicle 1" move="Eindhoven"/>
-				<event id="23" time="2336666665" vehicle="Vehicle 4" move="Den Haag"/>
-				<event id="24" time="2413333331" vehicle="Vehicle 3" pickup="14"/>
-				<event id="25" time="2618888885" vehicle="Vehicle 4" deliver="9"/>
-				<event id="26" time="2713333329" vehicle="Vehicle 3" move="Nijmegen"/>
-				<event id="27" time="2837777775" vehicle="Vehicle 2" move="Almere"/>
-				<event id="28" time="2918888883" vehicle="Vehicle 4" pickup="7"/>
-				<event id="29" time="3192222217" vehicle="Vehicle 2" deliver="0"/>
-				<event id="30" time="3218888881" vehicle="Vehicle 4" move="Amsterdam"/>
-				<event id="31" time="3492222215" vehicle="Vehicle 2" move="Groningen"/>
-				<event id="32" time="3493333324" vehicle="Vehicle 3" deliver="11"/>
-				<event id="33" time="3684999993" vehicle="Vehicle 1" deliver="10"/>
-				<event id="34" time="3793333323" vehicle="Vehicle 3" deliver="14"/>
-				<event id="35" time="3943333323" vehicle="Vehicle 4" move="Almere"/>
-				<event id="36" time="4093333322" vehicle="Vehicle 3" move="Apeldoorn"/>
-				<event id="37" time="4297777765" vehicle="Vehicle 4" deliver="8"/>
-				<event id="38" time="4597777763" vehicle="Vehicle 4" move="Amsterdam"/>
-				<event id="39" time="4727777762" vehicle="Vehicle 3" pickup="2"/>
-				<event id="40" time="4952222204" vehicle="Vehicle 4" deliver="4"/>
-				<event id="41" time="5027777760" vehicle="Vehicle 3" deliver="13"/>
-				<event id="42" time="5203333319" vehicle="Vehicle 2" deliver="1"/>
-				<event id="43" time="5252222202" vehicle="Vehicle 4" move="Utrecht"/>
-				<event id="44" time="5327777758" vehicle="Vehicle 3" move="Almere"/>
-				<event id="45" time="5758888866" vehicle="Vehicle 4" move="Nijmegen"/>
-				<event id="46" time="6217777754" vehicle="Vehicle 3" deliver="12"/>
-				<event id="47" time="6517777753" vehicle="Vehicle 3" move="Amsterdam"/>
-				<event id="48" time="6718888861" vehicle="Vehicle 4" pickup="5"/>
-				<event id="49" time="6872222195" vehicle="Vehicle 3" move="Den Haag"/>
-				<event id="50" time="7018888860" vehicle="Vehicle 4" deliver="7"/>
-				<event id="51" time="7318888858" vehicle="Vehicle 4" move="Apeldoorn"/>
-				<event id="52" time="7596666636" vehicle="Vehicle 3" deliver="2"/>
-				<event id="53" time="7896666634" vehicle="Vehicle 3" move="Rotterdam"/>
-				<event id="54" time="7953333299" vehicle="Vehicle 4" move="Groningen"/>
-				<event id="55" time="8178888855" vehicle="Vehicle 3" move="Utrecht"/>
-				<event id="56" time="8871111074" vehicle="Vehicle 3" pickup="3"/>
-				<event id="57" time="9171111073" vehicle="Vehicle 3" move="Almere"/>
-				<event id="58" time="9519999959" vehicle="Vehicle 4" deliver="5"/>
-				<event id="59" time="9652222181" vehicle="Vehicle 3" move="Groningen"/>
-				<event id="60" time="11363333283" vehicle="Vehicle 3" deliver="3"/>
+				<event id="8" time="691111111" vehicle="Vehicle 2" pickup="0"/>
+				<event id="9" time="831666666" vehicle="Vehicle 1" move="Utrecht"/>
+				<event id="10" time="882222222" vehicle="Vehicle 3" move="Breda"/>
+				<event id="11" time="991111111" vehicle="Vehicle 2" move="Rotterdam"/>
+				<event id="12" time="1190000000" vehicle="Vehicle 4" deliver="8"/>
+				<event id="13" time="1422222222" vehicle="Vehicle 3" move="Eindhoven"/>
+				<event id="14" time="1490000000" vehicle="Vehicle 4" move="Apeldoorn"/>
+				<event id="15" time="1531111111" vehicle="Vehicle 2" move="Den Haag"/>
+				<event id="16" time="1553333332" vehicle="Vehicle 1" move="Eindhoven"/>
+				<event id="17" time="1813333332" vehicle="Vehicle 2" pickup="1"/>
+				<event id="18" time="2113333331" vehicle="Vehicle 2" move="Amsterdam"/>
+				<event id="19" time="2113333332" vehicle="Vehicle 3" pickup="14"/>
+				<event id="20" time="2379999997" vehicle="Vehicle 4" pickup="2"/>
+				<event id="21" time="2413333330" vehicle="Vehicle 3" move="Nijmegen"/>
+				<event id="22" time="2679999996" vehicle="Vehicle 4" move="Utrecht"/>
+				<event id="23" time="2837777773" vehicle="Vehicle 2" move="Almere"/>
+				<event id="24" time="3084999993" vehicle="Vehicle 1" deliver="10"/>
+				<event id="25" time="3192222216" vehicle="Vehicle 2" deliver="0"/>
+				<event id="26" time="3193333327" vehicle="Vehicle 3" deliver="14"/>
+				<event id="27" time="3424444437" vehicle="Vehicle 4" pickup="4"/>
+				<event id="28" time="3492222214" vehicle="Vehicle 2" move="Groningen"/>
+				<event id="29" time="3493333326" vehicle="Vehicle 3" pickup="5"/>
+				<event id="30" time="3724444436" vehicle="Vehicle 4" move="Amsterdam"/>
+				<event id="31" time="3793333324" vehicle="Vehicle 3" move="Utrecht"/>
+				<event id="32" time="4231111099" vehicle="Vehicle 4" deliver="4"/>
+				<event id="33" time="4531111098" vehicle="Vehicle 4" move="Den Haag"/>
+				<event id="34" time="4753333320" vehicle="Vehicle 3" pickup="3"/>
+				<event id="35" time="5053333318" vehicle="Vehicle 3" move="Almere"/>
+				<event id="36" time="5203333317" vehicle="Vehicle 2" deliver="1"/>
+				<event id="37" time="5255555539" vehicle="Vehicle 4" deliver="2"/>
+				<event id="38" time="5534444426" vehicle="Vehicle 3" deliver="12"/>
+				<event id="39" time="5555555536" vehicle="Vehicle 4" pickup="7"/>
+				<event id="40" time="5834444425" vehicle="Vehicle 3" move="Apeldoorn"/>
+				<event id="41" time="5855555534" vehicle="Vehicle 4" move="Rotterdam"/>
+				<event id="42" time="6137777754" vehicle="Vehicle 4" move="Breda"/>
+				<event id="43" time="6677777752" vehicle="Vehicle 4" pickup="11"/>
+				<event id="44" time="6724444420" vehicle="Vehicle 3" deliver="13"/>
+				<event id="45" time="6977777750" vehicle="Vehicle 4" move="Nijmegen"/>
+				<event id="46" time="7024444418" vehicle="Vehicle 3" move="Groningen"/>
+				<event id="47" time="8046666633" vehicle="Vehicle 4" deliver="11"/>
+				<event id="48" time="8346666630" vehicle="Vehicle 4" deliver="7"/>
+				<event id="49" time="8591111075" vehicle="Vehicle 3" deliver="5"/>
+				<event id="50" time="8646666628" vehicle="Vehicle 4" move="Apeldoorn"/>
+				<event id="51" time="8891111074" vehicle="Vehicle 3" deliver="3"/>
+				<event id="52" time="9191111072" vehicle="Vehicle 3" move="Almere"/>
+				<event id="53" time="9281111069" vehicle="Vehicle 4" pickup="9"/>
+				<event id="54" time="9581111068" vehicle="Vehicle 4" move="Utrecht"/>
+				<event id="55" time="10325555510" vehicle="Vehicle 4" move="Rotterdam"/>
+				<event id="56" time="10902222176" vehicle="Vehicle 3" pickup="6"/>
+				<event id="57" time="11017777729" vehicle="Vehicle 4" move="Den Haag"/>
+				<event id="58" time="11202222174" vehicle="Vehicle 3" move="Utrecht"/>
+				<event id="59" time="11299999950" vehicle="Vehicle 4" deliver="9"/>
+				<event id="60" time="11683333281" vehicle="Vehicle 3" deliver="6"/>
 			</events>
 		</round>
 	</rounds>
 	<statistics>
 		<stat rank="1" agent="auction-random">
-			<total-tasks value="11"/>
-			<total-distance value="1339.5"/>
-			<total-cost value="6698"/>
-			<total-reward value="12211"/>
-			<total-profit value="5513"/>
+			<total-tasks value="12"/>
+			<total-distance value="1474.5"/>
+			<total-cost value="7373"/>
+			<total-reward value="10863"/>
+			<total-profit value="3490"/>
 		</stat>
 		<stat rank="2" agent="auction-adversary">
-			<total-tasks value="4"/>
+			<total-tasks value="3"/>
 			<total-distance value="554.4"/>
 			<total-cost value="2772"/>
-			<total-reward value="2863"/>
-			<total-profit value="91"/>
+			<total-reward value="2127"/>
+			<total-profit value="-645"/>
 		</stat>
 	</statistics>
 </history>
