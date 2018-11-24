@@ -59,13 +59,13 @@ public class AuctionTemplate implements AuctionBehavior {
     int bids_count = 0;
     
     boolean enemy_influenced = false; //boolean to store the information if we detect that the enemy got influenced
-    Long avg_bids_enemy = (long) 0; //variable to verify how the enemy react
+    double avg_bids_enemy = 0; //variable to verify how the enemy react
 
     
     double averageProfit = 600; //coeff to set the profit that we will adjust in function of the enemy
     int coeff_bid = 7;
 
-    
+    int enemy_id = -1;
     List<Task> task_list_agent = new ArrayList<Task>(); //our and their tasks list
     List<Task> task_list_enemy = new ArrayList<Task>();
 
@@ -96,12 +96,12 @@ public class AuctionTemplate implements AuctionBehavior {
 		else if(city_name.equals("Lausanne")) {
 			System.out.println("Lausanne");
 			coeff_bid = 10;
-			averageProfit = 600;
+			averageProfit = 700;
 		}
 		else if(city_name.equals("Amsterdam")) {
 			System.out.println("Amsterdam");
 			coeff_bid = 7;
-			averageProfit = 500;
+			averageProfit = 400;
 		}else {
 			System.out.println("else: " + topology.cities().get(0).name);
 		}
@@ -109,6 +109,8 @@ public class AuctionTemplate implements AuctionBehavior {
 		//set up given
 		this.distribution = distribution;
 		this.agent = agent;
+		if(agent.id() == 0) enemy_id = 1;
+		else enemy_id = 0;
 		vehicles_list = agent.vehicles();
 		this.vehicle = agent.vehicles().get(0);
 		this.currentCity = vehicle.homeCity();
@@ -133,23 +135,24 @@ public class AuctionTemplate implements AuctionBehavior {
 
 	@Override
 	public void auctionResult(Task previous, int winner, Long[] bids) {
+		if(enemy_id != -1) {
+			Result result = new Result(previous,winner,bids[enemy_id]);
+			result_list_enemy.add(result);
+		}
 		
+
 		
 		if (winner == agent.id()) {
 			//System.out.println("we win with bid: " + bids[agent.id()]);
 			//updating our table:
 			// 1- list of all the tasks won
-			Result result = new Result(previous,winner,bids[winner]);
 			task_list_enemy.remove(task_list_enemy.size()-1);
 			currentCity = previous.deliveryCity;
 		}
 		else {
 			//System.out.println("they win with bid: " + bids[winner]);
 			//updating enemy's tables:
-			// 1- list of all the bids
-			// 2- list of all the tasks won
-			Result result = new Result(previous,winner,bids[winner]);
-			result_list_enemy.add(result);
+			// 1- list of all the tasks won
 			task_list_agent.remove(task_list_agent.size()-1);
 		}
 		
@@ -212,14 +215,40 @@ public class AuctionTemplate implements AuctionBehavior {
 		
 		//return large bids for the firsts tasks to determine if the enemy got influenced
 		bids_count ++;
+
+		//Trying to detect if the enemy is influenced by large bids
+		//Based on the possible cost they have (computed with our algorithm) we determine if there big increase in a wrong way
+		//In other words, if they increase their bids a lot (more than two times)
+		//the fact that we compute with our algorithm doesn't matter because we just evaluate the difference, 
+		//even if they have a better algorithm, the ratio doesn't change
+		double diff_enemy = cost_enemy-cost_enemy_previous+1;			
+
+		if(bids_count==3 && result_list_enemy.size()>1) {
+			avg_bids_enemy = result_list_enemy.get(1).get_bids();
+			System.out.println("avg_bids_enemy: " + avg_bids_enemy);
+
+		}
+		//System.out.println("bids_count: " + bids_count + ", result_list_enemy: " + result_list_enemy.size());
+
+		if(bids_count==5 && avg_bids_enemy!=0 && result_list_enemy.size()>1) {
+			double new_bid_enemy = result_list_enemy.get(result_list_enemy.size()-1).get_bids();
+			System.out.println("new_bid_enemy: " + new_bid_enemy);
+
+			if(avg_bids_enemy*3 < new_bid_enemy){
+				enemy_influenced = true;
+				System.out.println("Enemy was influenced!");
+			}
+			else System.out.println("Enemy was not influenced.");
+		}
+	
 		if(bids_count == 2) {
 			return (long) 1000*coeff_bid;
 		}
 		else if(bids_count == 3) {
-			return (long) (2000/7)*coeff_bid;
+			return (long) 600*coeff_bid;
 		}
 		else if(bids_count == 1) {
-			return (long) (3000/7)*coeff_bid;
+			return (long) 250*coeff_bid;
 		}
 		
 		
@@ -232,32 +261,30 @@ public class AuctionTemplate implements AuctionBehavior {
 		else { bid  = diff + averageProfit - 100   ;}
 		
 		
-		//Trying to detect if the enemy is influenced by large bids
-		//Based on the possible cost they have (computed with our algorithm) we determine if there big increase in a wrong way
-		//In other words, if they increase their bids a lot (more than two times)
-		//the fact that we compute with our algorithm doesn't matter because we just evaluate the difference, 
-		//even if they have a better algorithm, the ratio doesn't change
-		double diff_enemy = cost_enemy-cost_enemy_previous+1;
-		if(bids_count==2) 
-			avg_bids_enemy = (long) (result_list_enemy.get(result_list_enemy.size()-1).get_bids()/(diff_enemy));
-		
-		if(bids_count==4) {
-			if(avg_bids_enemy*2 < result_list_enemy.get(result_list_enemy.size()-1).get_bids()/(diff_enemy));{
-				enemy_influenced = true;
-				System.out.println("Enemy was influenced!");
-			}
-		}
-		
 		//if we detected that the enemy is influenced by large bids, we bet something realy big to increase our
 		//profit for the next tasks
 		if(enemy_influenced) {
 			if(bids_count==11) return (long) (20000/7)*coeff_bid;
-			if(bids_count> 11 && bids_count < 14) return (long) (diff + averageProfit*2);
+			if(bids_count> 11 && bids_count < 14) {
+				System.out.println("Trying to influence more the other competitor to make more profit");
+				return (long) (diff + averageProfit*2);
+			}
 		}
 			
 		//Decreasing bids if enemy too competitive (if we got less than tasks number / 2)
 		if(!enemy_influenced && bids_count>7 && bids_count % 2 == 0) {
-			if(task_list_agent.size()<bids_count/2) averageProfit=averageProfit*0.92;
+			if(task_list_agent.size()<bids_count/2) {
+				System.out.println("We are loosing, we decrease our profit");
+				averageProfit=averageProfit*0.92;
+			}
+		}
+		
+		//Decreasing bids if enemy too competitive (if we got less than tasks number / 2)
+		if(!enemy_influenced && bids_count>7 && bids_count % 2 == 0) {
+			if(task_list_agent.size()>bids_count/2) {
+				System.out.println("We are winning the tasks, increasing our profit");
+				averageProfit=averageProfit*1.1;
+			}
 		}
 		
 		//As we calculate diff as: (cost with the new task) less (cost without it), for the first task we will bet 
