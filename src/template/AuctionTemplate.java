@@ -221,7 +221,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		//In other words, if they increase their bids a lot (more than two times)
 		//the fact that we compute with our algorithm doesn't matter because we just evaluate the difference, 
 		//even if they have a better algorithm, the ratio doesn't change
-		double diff_enemy = cost_enemy-cost_enemy_previous+1;			
+		double marginal_cost_enemy = cost_enemy-cost_enemy_previous+1;			
 
 		if(bids_count==3 && result_list_enemy.size()>1) {
 			avg_bids_enemy = result_list_enemy.get(1).get_bids();
@@ -254,11 +254,11 @@ public class AuctionTemplate implements AuctionBehavior {
 		
 		double bid;
 		//finding the cost that the current task cause (cost of the plan with the task less the cost of a plan without)
-		long diff = cost_agent - cost_agent_previous; 
+		long marginal_cost = cost_agent - cost_agent_previous; 
 		
         //determine our bids
-		if(diff <= 0) { bid = averageProfit ;}
-		else { bid  = diff + averageProfit - 100   ;}
+		if(marginal_cost <= 0) { bid = averageProfit ;}
+		else { bid  = marginal_cost + averageProfit - 100   ;}
 		
 		
 		//if we detected that the enemy is influenced by large bids, we bet something realy big to increase our
@@ -267,7 +267,7 @@ public class AuctionTemplate implements AuctionBehavior {
 			if(bids_count==11) return (long) (20000/7)*coeff_bid;
 			if(bids_count> 11 && bids_count < 14) {
 				System.out.println("Trying to influence more the other competitor to make more profit");
-				return (long) (diff + averageProfit*2);
+				return (long) (marginal_cost + averageProfit*2);
 			}
 		}
 			
@@ -275,7 +275,7 @@ public class AuctionTemplate implements AuctionBehavior {
 		if(!enemy_influenced && bids_count>7 && bids_count % 2 == 0) {
 			if(task_list_agent.size()<bids_count/2) {
 				System.out.println("We are loosing, we decrease our profit");
-				averageProfit=averageProfit*0.92;
+				averageProfit=averageProfit*0.8;
 			}
 		}
 		
@@ -290,8 +290,9 @@ public class AuctionTemplate implements AuctionBehavior {
 		//As we calculate diff as: (cost with the new task) less (cost without it), for the first task we will bet 
 		//a large number that is not representative of the real cost (because we will get other tasks which will allow us
 		//to compute a plan that minimize the cost.
-		if(task_list_agent.size()==1) return (long) (diff - averageProfit);
+		if(task_list_agent.size()==1) return (long) (marginal_cost - averageProfit);
 
+		
 		
 		//System.out.println("New cost agent : "+cost_agent +"New cost enemy : "+cost_enemy +" | diff agent: " +diff + " | bid: "+bid+ " | SUM: "+profit_agent);
 		
